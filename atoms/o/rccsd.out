@@ -1,0 +1,234 @@
+#INFO: **** input file is /projects/yizh8382/projects/afqmc_ccpt/afqmc_ccsd_pt_data/atoms/c/ccsd.py ****
+import numpy as np
+from pyscf import gto, scf, cc
+
+norb_frozen = 1
+s = 2
+atomstring = f'''
+C   0.000000   0.000000   0.000000
+'''
+
+mol = gto.M(atom = atomstring, verbose=4, basis='ccpvdz', spin=s)
+mf = scf.RHF(mol)
+# mf.chkfile = 'mf.chk'
+mf.max_cycle = 500
+mf.level_shift = 0.4
+mf.kernel()
+mo1 = mf.stability()[0]
+mf = mf.newton().run(mo1, mf.mo_occ)
+mo1 = mf.stability()[0]
+mf = mf.newton().run(mo1, mf.mo_occ)
+mf.stability()
+
+mycc = cc.CCSD(mf)
+mycc.frozen = norb_frozen
+mycc.run()
+et = mycc.ccsd_t()
+print(mycc.e_tot + et)
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='bnode0307.rc.int.colorado.edu', release='4.18.0-477.27.1.el8_8.x86_64', version='#1 SMP Thu Aug 31 10:29:22 EDT 2023', machine='x86_64')  Threads 28
+Python 3.10.2 | packaged by conda-forge | (main, Mar  8 2022, 15:52:01) [GCC 9.4.0]
+numpy 2.0.2  scipy 1.14.1  h5py 3.12.1
+Date: Tue Oct 28 17:27:51 2025
+PySCF version 2.9.0
+PySCF path  /projects/yizh8382/tools/lno_pyscf_gcc
+GIT HEAD (branch master) 142756584ed3963728cc1f6823286f4605811a6c
+
+[ENV] PYSCF_TMPDIR /scratch/alpine/yizh8382/pyscf
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 1
+[INPUT] num. electrons = 6
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 2
+[INPUT] symmetry False subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 C      0.000000000000   0.000000000000   0.000000000000 AA    0.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+
+nuclear repulsion = 0
+number of shells = 5
+number of NR pGTOs = 26
+number of NR cGTOs = 14
+basis = ccpvdz
+ecp = {}
+CPU time:         6.48
+
+
+******** <class 'pyscf.scf.rohf.ROHF'> ********
+method = ROHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0.4
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 500
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmpiinm4s5n
+max_memory 4000 MB (current use 102 MB)
+num. doubly occ = 2  num. singly occ = 2
+Set gradient conv threshold to 3.16228e-05
+init E= -37.2786538116583
+
+WARN: HOMO 0.233993567729254 >= LUMO 0.233993567729253
+
+cycle= 1 E= -37.6600768077069  delta_E= -0.381  |g|= 0.145  |ddm|= 0.793
+  HOMO = 0.0153898618842858  LUMO = 0.415430118558077
+cycle= 2 E= -37.6811716918651  delta_E= -0.0211  |g|= 0.0373  |ddm|= 0.22
+  HOMO = 0.0685932206401068  LUMO = 0.459530316922788
+cycle= 3 E= -37.6822194826933  delta_E= -0.00105  |g|= 0.0172  |ddm|= 0.0476
+  HOMO = 0.0742182807533232  LUMO = 0.462758988302823
+cycle= 4 E= -37.6824051960894  delta_E= -0.000186  |g|= 0.00435  |ddm|= 0.0251
+  HOMO = 0.0739145736081599  LUMO = 0.462656590156035
+cycle= 5 E= -37.6824173649947  delta_E= -1.22e-05  |g|= 0.00093  |ddm|= 0.00679
+  HOMO = 0.0739713710005117  LUMO = 0.462645003654681
+cycle= 6 E= -37.6824178556142  delta_E= -4.91e-07  |g|= 0.000204  |ddm|= 0.00135
+  HOMO = 0.0739547464091198  LUMO = 0.462649325897254
+cycle= 7 E= -37.6824178803896  delta_E= -2.48e-08  |g|= 4.36e-05  |ddm|= 0.000308
+  HOMO = 0.0739564201716871  LUMO = 0.462648838853467
+cycle= 8 E= -37.6824178814101  delta_E= -1.02e-09  |g|= 9.44e-06  |ddm|= 6.23e-05
+  HOMO = 0.0739563703587958  LUMO = 0.462648855883823
+cycle= 9 E= -37.6824178814565  delta_E= -4.64e-11  |g|= 2.05e-06  |ddm|= 1.32e-05
+  HOMO = -0.126043645164138  LUMO = 0.062648943304985
+Extra cycle  E= -37.6824178814586  delta_E= -2.11e-12  |g|= 5.42e-07  |ddm|= 2.62e-06
+converged SCF energy = -37.6824178814586
+rohf_internal: lowest eigs of H = [2.98322977e-08 5.72346214e-08 5.23879121e-01]
+<class 'pyscf.scf.rohf.ROHF'> wavefunction is stable in the internal stability analysis
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0.4
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 500
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmpiinm4s5n
+max_memory 4000 MB (current use 128 MB)
+num. doubly occ = 2  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 500
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmpiinm4s5n
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 128 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.126043712211891  LUMO = 0.0626488675237375
+Initial guess E= -37.6824178814586  |g|= 5.41544e-07
+macro= 0  E= -37.6824178814587  delta_E= -1.20792e-13  |g|= 5.41544e-07  1 KF 2 JK
+Canonicalize SCF orbitals
+macro X = 1  E=-37.6824178814587  |g|= 5.41544e-07  total 2 KF 4 JK
+converged SCF energy = -37.6824178814587
+rohf_internal: lowest eigs of H = [4.23511475e-09 5.04607972e-07 5.23878415e-01]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction is stable in the internal stability analysis
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0.4
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 500
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmpiinm4s5n
+max_memory 4000 MB (current use 182 MB)
+num. doubly occ = 2  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 500
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmpiinm4s5n
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 182 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.126043779314921  LUMO = 0.0626488110006527
+Initial guess E= -37.6824178814587  |g|= 3.41571e-07
+macro= 0  E= -37.6824178814587  delta_E= -4.26326e-14  |g|= 3.41571e-07  1 KF 2 JK
+Canonicalize SCF orbitals
+macro X = 1  E=-37.6824178814587  |g|= 3.41571e-07  total 2 KF 4 JK
+converged SCF energy = -37.6824178814587
+rohf_internal: lowest eigs of H = [9.27603449e-09 4.36185864e-06 5.23878647e-01]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction is stable in the internal stability analysis
+
+WARN: RCCSD method does not support ROHF method. ROHF object is converted to UHF object and UCCSD method is called.
+
+
+******** <class 'pyscf.cc.uccsd.UCCSD'> ********
+CC2 = 0
+CCSD nocc = (3, 1), nmo = (13, 13)
+frozen orbitals 1
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-06
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 182 MB)
+Init t2, MP2 energy = -0.0531389744905945
+Init E_corr(UCCSD) = -0.0560099473481003
+cycle = 1  E_corr(UCCSD) = -0.0702715013038624  dE = -0.014261554  norm(t1,t2) = 0.0459437
+cycle = 2  E_corr(UCCSD) = -0.0743100203481524  dE = -0.00403851904  norm(t1,t2) = 0.0188781
+cycle = 3  E_corr(UCCSD) = -0.0769588082099467  dE = -0.00264878786  norm(t1,t2) = 0.00944227
+cycle = 4  E_corr(UCCSD) = -0.0769160720886758  dE = 4.27361213e-05  norm(t1,t2) = 0.00151921
+cycle = 5  E_corr(UCCSD) = -0.0769278353582276  dE = -1.17632696e-05  norm(t1,t2) = 0.000146335
+cycle = 6  E_corr(UCCSD) = -0.0769232405779182  dE = 4.59478031e-06  norm(t1,t2) = 2.47245e-05
+cycle = 7  E_corr(UCCSD) = -0.076925436998491  dE = -2.19642057e-06  norm(t1,t2) = 5.8905e-06
+cycle = 8  E_corr(UCCSD) = -0.0769248162577326  dE = 6.20740758e-07  norm(t1,t2) = 2.07733e-06
+cycle = 9  E_corr(UCCSD) = -0.0769248205112652  dE = -4.2535326e-09  norm(t1,t2) = 2.1818e-07
+UCCSD converged
+E(UCCSD) = -37.75934270197  E_corr = -0.07692482051126524
+UCCSD(T) correction = -0.000975487870550386
+-37.76031818984055

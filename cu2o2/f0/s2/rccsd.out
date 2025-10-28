@@ -1,0 +1,528 @@
+#INFO: **** input file is /home/sharmagroup/sharmagroup/project/afqmc_ccpt/cu2o2/f0/s2/ccsd.py ****
+import numpy as np
+from pyscf import gto, scf, cc
+
+norb_frozen = 10
+f = 0
+s = 2
+# bond lengths
+cu_cu = 2.8 + f * 0.8
+o_o = 2.3 - f * 0.9
+
+atomString = f'Cu {-cu_cu/2} 0. 0.; Cu {cu_cu/2} 0. 0.; O 0. {o_o/2} 0.; O 0. {-o_o/2} 0.'
+
+mol = gto.M(atom = atomString,
+    basis = {'O': gto.basis.parse('''
+O    S
+ 105374.95                   0.459000000E-04             -0.105000000E-04            0.900000000E-05             -0.109000000E-04
+  15679.240                  0.360700000E-03             -0.825000000E-04            0.705000000E-04             -0.822000000E-04
+   3534.5447                 0.191980000E-02             -0.441200000E-03            0.375700000E-03             -0.467500000E-03
+    987.36516                0.820670000E-02             -0.188640000E-02            0.161460000E-02             -0.184650000E-02
+    315.97875                0.297257000E-01             -0.695400000E-02            0.593400000E-02             -0.755850000E-02
+    111.65428                0.904558000E-01             -0.217208000E-01            0.187866000E-01             -0.210868000E-01
+     42.699451               0.217405400E+00             -0.568513000E-01            0.494683000E-01             -0.667511000E-01
+     17.395596               0.368765700E+00             -0.113963500E+00            0.103039900E+00             -0.109367300E+00
+      7.4383090              0.337279800E+00             -0.162020100E+00            0.162058600E+00             -0.273143100E+00
+      3.2228620              0.967505000E-01             -0.333800000E-01            0.936700000E-03             0.209713700E+00
+      1.2538770              0.256740000E-02             0.365506800E+00             -0.822425100E+00            0.120348070E+01
+       .49515500             0.137460000E-02             0.552003100E+00             -0.101790200E+00            -0.677469400E+00
+       .19166500             -0.141000000E-03            0.223639300E+00             0.425393900E+00             -0.142988400E+01
+       .06708300             0.683000000E-04             0.657450000E-02             0.687702800E+00             0.148910680E+01
+O    P
+    200.00000                0.893300000E-03            -0.838400000E-03            0.126180000E-02
+     46.533367               0.736900000E-02            -0.684910000E-02            0.111628000E-01
+     14.621809               0.349392000E-01            -0.328505000E-01            0.518316000E-01
+      5.3130640              0.115298500E+00            -0.110006000E+00            0.197884500E+00
+      2.1025250              0.258323100E+00            -0.313526300E+00            0.570765200E+00
+       .85022300             0.369623100E+00            -0.319601100E+00            -0.178929100E+00
+       .33759700             0.323878900E+00            0.221724300E+00             -0.898207700E+00
+       .12889200             0.146798900E+00            0.562261600E+00             0.266664300E+00
+       .04511200             0.336127000E-01            0.301325100E+00             0.625899400E+00
+O    D
+      3.7500000              0.12849340            -0.21820550
+      1.3125000              0.52118840            -0.48176950
+       .45937500             0.43457840             0.13575950
+       .16078100             0.14574090             0.82977340
+    '''),
+    'Cu': gto.basis.parse('''
+Cu    S
+     27.6963200              0.2311320              0.0000000              0.0000000              0.0000000              0.0000000              0.0000000
+     13.5053500             -0.6568110              0.0000000              0.0000000              0.0000000              0.0000000              0.0000000
+      8.8153550             -0.5458750              0.0000000              0.0000000              0.0000000              0.0000000              0.0000000
+      2.3808050              0.0000000              1.0000000              0.0000000              0.0000000              0.0000000              0.0000000
+      0.9526160              0.0000000              0.0000000              1.0000000              0.0000000              0.0000000              0.0000000
+      0.1126620              0.0000000              0.0000000              0.0000000              1.0000000              0.0000000              0.0000000
+      0.0404860              0.0000000              0.0000000              0.0000000              0.0000000              1.0000000              0.0000000
+      0.0100000              0.0000000              0.0000000              0.0000000              0.0000000              0.0000000              1.0000000
+Cu    P
+     93.5043270              0.0228290              0.0000000              0.0000000              0.0000000              0.0000000
+     16.2854640             -1.0095130              0.0000000              0.0000000              0.0000000              0.0000000
+      5.9942360              0.0000000              0.2464500              0.0000000              0.0000000              0.0000000
+      2.5368750              0.0000000              0.7920240              0.0000000              0.0000000              0.0000000
+      0.8979340              0.0000000              0.0000000              1.0000000              0.0000000              0.0000000
+      0.1317290              0.0000000              0.0000000              0.0000000              1.0000000              0.0000000
+      0.0308780              0.0000000              0.0000000              0.0000000              0.0000000              1.0000000
+Cu    D
+     41.2250060              0.0446940              0.0000000              0.0000000
+     12.3432500              0.2121060              0.0000000              0.0000000
+      4.2019200              0.4534230              0.0000000              0.0000000
+      1.3798250              0.5334650              0.0000000              0.0000000
+      0.3834530              0.0000000              1.0000000              0.0000000
+      0.1000000              0.0000000              0.0000000              1.0000000
+    ''')},
+    ecp = {'Cu': gto.basis.parse_ecp('''
+Cu nelec 10
+Cu ul
+2       1.000000000            0.000000000
+Cu S
+2      30.220000000          355.770158000
+2      13.190000000           70.865357000
+Cu P
+2      33.130000000          233.891976000
+2      13.220000000           53.947299000
+Cu D
+2      38.420000000          -31.272165000
+2      13.260000000           -2.741104000
+    ''')},
+    verbose=4, unit='angstrom', symmetry=0, spin=s, charge=2)
+# mf = scf.RHF(mol)
+# mf.level_shift = 0.5
+# mf.kernel()
+
+umf = scf.RHF(mol)
+umf.chkfile = 'rmf.chk'
+umf.init_guess = 'chk'
+umf.level_shift = 0.5
+umf.kernel()
+mo1 = umf.stability()[0]
+umf = umf.newton().run(mo1, umf.mo_occ)
+mo1 = umf.stability()[0]
+umf = umf.newton().run(mo1, umf.mo_occ)
+mo1 = umf.stability()[0]
+umf = umf.newton().run(mo1, umf.mo_occ)
+mo1 = umf.stability()[0]
+umf = umf.newton().run(mo1, umf.mo_occ)
+umf.stability()
+
+mycc = cc.CCSD(umf)
+mycc.frozen = norb_frozen
+mycc.max_cycle = 100
+mycc.run()
+et = mycc.ccsd_t()
+print(f'spin = {s}  ccsd(t) energy is: { mycc.e_tot + et}')
+
+options = {'n_eql': 3,
+           'n_prop_steps': 50,
+            'n_ene_blocks': 5,
+            'n_sr_blocks': 5,
+            'n_blocks': 10,
+            'n_walkers': 30,
+            'seed': 2,
+            'walker_type': 'rhf',
+            'trial': 'uccsd_pt2_ad', # ccsd_pt,ccsd_pt_ad,ccsd_pt2_ad, ucisd
+            'dt':0.005,
+            'free_projection':False,
+            'ad_mode':None,
+            'use_gpu': True,
+            }
+
+# from ad_afqmc import pyscf_interface
+# from ad_afqmc.ccsd_pt import sample_uccsd_pt2
+# pyscf_interface.prep_afqmc(mycc,options,chol_cut=1e-5)
+# sample_uccsd_pt2.run_afqmc(options)
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='sharmagroup-rn', release='6.14.0-33-generic', version='#33~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 19 17:02:30 UTC 2', machine='x86_64')  Threads 16
+Python 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+numpy 2.3.1  scipy 1.16.2  h5py 3.14.0
+Date: Mon Oct 27 17:17:50 2025
+PySCF version 2.11.0
+PySCF path  /home/sharmagroup/sharmagroup/pyscf
+GIT HEAD (branch master) 3d1768f5e33b144b606c3d2c81c12ee54d794501
+
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 4
+[INPUT] num. electrons = 52
+[INPUT] charge = 2
+[INPUT] spin (= nelec alpha-beta = 2S) = 2
+[INPUT] symmetry 0 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 Cu    -1.400000000000   0.000000000000   0.000000000000 AA   -2.645616574391   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  2 Cu     1.400000000000   0.000000000000   0.000000000000 AA    2.645616574391   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  3 O      0.000000000000   1.150000000000   0.000000000000 AA    0.000000000000   2.173185043250   0.000000000000 Bohr   0.0
+[INPUT]  4 O      0.000000000000  -1.150000000000   0.000000000000 AA    0.000000000000  -2.173185043250   0.000000000000 Bohr   0.0
+
+nuclear repulsion = 260.534383992932
+number of shells = 12
+number of NR pGTOs = 240
+number of NR cGTOs = 118
+basis = {'O': [[0, [105374.95, 4.59e-05, -1.05e-05, 9e-06, -1.09e-05], [15679.24, 0.0003607, -8.25e-05, 7.05e-05, -8.22e-05], [3534.5447, 0.0019198, -0.0004412, 0.0003757, -0.0004675], [987.36516, 0.0082067, -0.0018864, 0.0016146, -0.0018465], [315.97875, 0.0297257, -0.006954, 0.005934, -0.0075585], [111.65428, 0.0904558, -0.0217208, 0.0187866, -0.0210868], [42.699451, 0.2174054, -0.0568513, 0.0494683, -0.0667511], [17.395596, 0.3687657, -0.1139635, 0.1030399, -0.1093673], [7.438309, 0.3372798, -0.1620201, 0.1620586, -0.2731431], [3.222862, 0.0967505, -0.03338, 0.0009367, 0.2097137], [1.253877, 0.0025674, 0.3655068, -0.8224251, 1.2034807], [0.495155, 0.0013746, 0.5520031, -0.1017902, -0.6774694], [0.191665, -0.000141, 0.2236393, 0.4253939, -1.429884], [0.067083, 6.83e-05, 0.0065745, 0.6877028, 1.4891068]], [1, [200.0, 0.0008933, -0.0008384, 0.0012618], [46.533367, 0.007369, -0.0068491, 0.0111628], [14.621809, 0.0349392, -0.0328505, 0.0518316], [5.313064, 0.1152985, -0.110006, 0.1978845], [2.102525, 0.2583231, -0.3135263, 0.5707652], [0.850223, 0.3696231, -0.3196011, -0.1789291], [0.337597, 0.3238789, 0.2217243, -0.8982077], [0.128892, 0.1467989, 0.5622616, 0.2666643], [0.045112, 0.0336127, 0.3013251, 0.6258994]], [2, [3.75, 0.1284934, -0.2182055], [1.3125, 0.5211884, -0.4817695], [0.459375, 0.4345784, 0.1357595], [0.160781, 0.1457409, 0.8297734]]], 'Cu': [[0, [27.69632, 0.231132, 0.0, 0.0, 0.0, 0.0, 0.0], [13.50535, -0.656811, 0.0, 0.0, 0.0, 0.0, 0.0], [8.815355, -0.545875, 0.0, 0.0, 0.0, 0.0, 0.0], [2.380805, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0], [0.952616, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0], [0.112662, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], [0.040486, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0], [0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]], [1, [93.504327, 0.022829, 0.0, 0.0, 0.0, 0.0], [16.285464, -1.009513, 0.0, 0.0, 0.0, 0.0], [5.994236, 0.0, 0.24645, 0.0, 0.0, 0.0], [2.536875, 0.0, 0.792024, 0.0, 0.0, 0.0], [0.897934, 0.0, 0.0, 1.0, 0.0, 0.0], [0.131729, 0.0, 0.0, 0.0, 1.0, 0.0], [0.030878, 0.0, 0.0, 0.0, 0.0, 1.0]], [2, [41.225006, 0.044694, 0.0, 0.0], [12.34325, 0.212106, 0.0, 0.0], [4.20192, 0.453423, 0.0, 0.0], [1.379825, 0.533465, 0.0, 0.0], [0.383453, 0.0, 1.0, 0.0], [0.1, 0.0, 0.0, 1.0]]]}
+ecp = {'Cu': [10, [[-1, [[], [], [], [], [], [], []]], [0, [[], [], [[30.22, 355.770158], [13.19, 70.865357]], [], [], [], []]], [1, [[], [], [[33.13, 233.891976], [13.22, 53.947299]], [], [], [], []]], [2, [[], [], [[38.42, -31.272165], [13.26, -2.741104]], [], [], [], []]]]]}
+CPU time:         0.25
+
+
+******** <class 'pyscf.scf.rohf.ROHF'> ********
+method = ROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.5
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_memory 4000 MB (current use 109 MB)
+num. doubly occ = 25  num. singly occ = 2
+Set gradient conv threshold to 3.16228e-05
+
+WARN: Fail in reading rmf.chk. Use MINAO initial guess
+
+init E= -475.452687119517
+  HOMO = -0.295999321507286  LUMO = -0.248099941028537
+cycle= 1 E= -540.766052985316  delta_E= -65.3  |g|= 2.77  |ddm|= 2.87
+  HOMO = -0.605753900925265  LUMO = -0.182883446330404
+cycle= 2 E= -540.955607363155  delta_E= -0.19  |g|= 0.596  |ddm|= 0.552
+  HOMO = -0.525521613867554  LUMO = -0.0454539623566266
+cycle= 3 E= -540.985967107392  delta_E= -0.0304  |g|= 0.448  |ddm|= 0.324
+  HOMO = -0.495122328166122  LUMO = -0.0507292874863402
+cycle= 4 E= -541.021205899579  delta_E= -0.0352  |g|= 0.111  |ddm|= 0.182
+  HOMO = -0.48485441399649  LUMO = -0.0441918020757513
+cycle= 5 E= -541.036083010347  delta_E= -0.0149  |g|= 0.12  |ddm|= 0.16
+  HOMO = -0.469254835653803  LUMO = -0.0244764134364496
+cycle= 6 E= -541.04844001759  delta_E= -0.0124  |g|= 0.0742  |ddm|= 0.158
+  HOMO = -0.465960005383938  LUMO = -0.0117466599098431
+cycle= 7 E= -541.057293301191  delta_E= -0.00885  |g|= 0.0494  |ddm|= 0.196
+  HOMO = -0.465225647787864  LUMO = -0.01213722723395
+cycle= 8 E= -541.058936043514  delta_E= -0.00164  |g|= 0.0299  |ddm|= 0.0668
+  HOMO = -0.467281928847183  LUMO = -0.0129035546305463
+cycle= 9 E= -541.059770618609  delta_E= -0.000835  |g|= 0.0245  |ddm|= 0.0538
+  HOMO = -0.463455819181247  LUMO = -0.0135654631566131
+cycle= 10 E= -541.060204289583  delta_E= -0.000434  |g|= 0.0204  |ddm|= 0.0391
+  HOMO = -0.462833009946432  LUMO = -0.0154059706309992
+cycle= 11 E= -541.060433183681  delta_E= -0.000229  |g|= 0.0151  |ddm|= 0.0302
+  HOMO = -0.461530103774729  LUMO = -0.0148451380895603
+cycle= 12 E= -541.060514941021  delta_E= -8.18e-05  |g|= 0.00886  |ddm|= 0.0171
+  HOMO = -0.462065606745109  LUMO = -0.015560578405631
+cycle= 13 E= -541.060543602387  delta_E= -2.87e-05  |g|= 0.0064  |ddm|= 0.0111
+  HOMO = -0.461907113660955  LUMO = -0.0155977870531718
+cycle= 14 E= -541.06055351499  delta_E= -9.91e-06  |g|= 0.00362  |ddm|= 0.00603
+  HOMO = -0.461787700951074  LUMO = -0.0153786829908683
+cycle= 15 E= -541.060556323289  delta_E= -2.81e-06  |g|= 0.00207  |ddm|= 0.00295
+  HOMO = -0.461791495367361  LUMO = -0.0153810501393253
+cycle= 16 E= -541.060557179494  delta_E= -8.56e-07  |g|= 0.00112  |ddm|= 0.00152
+  HOMO = -0.461795436922599  LUMO = -0.0153772592890184
+cycle= 17 E= -541.060557408247  delta_E= -2.29e-07  |g|= 0.000634  |ddm|= 0.000763
+  HOMO = -0.461805417075947  LUMO = -0.0153720985524197
+cycle= 18 E= -541.060557475303  delta_E= -6.71e-08  |g|= 0.000325  |ddm|= 0.000365
+  HOMO = -0.461809544845727  LUMO = -0.0153728581428245
+cycle= 19 E= -541.06055749328  delta_E= -1.8e-08  |g|= 0.000162  |ddm|= 0.000186
+  HOMO = -0.461810359058226  LUMO = -0.0153722182401686
+cycle= 20 E= -541.060557497876  delta_E= -4.6e-09  |g|= 7.68e-05  |ddm|= 9.28e-05
+  HOMO = -0.461810701273748  LUMO = -0.0153713355176
+cycle= 21 E= -541.06055749898  delta_E= -1.1e-09  |g|= 4.33e-05  |ddm|= 5.07e-05
+  HOMO = -0.461810934902734  LUMO = -0.0153714890705913
+cycle= 22 E= -541.060557499306  delta_E= -3.26e-10  |g|= 2.46e-05  |ddm|= 2.71e-05
+  HOMO = -0.711808963876937  LUMO = -0.51537152868333
+Extra cycle  E= -541.060557499198  delta_E= 1.08e-10  |g|= 4.56e-05  |ddm|= 3.15e-05
+converged SCF energy = -541.060557499198
+rohf_internal: lowest eigs of H = [-0.58458871 -0.48191755 -0.17042637]
+<class 'pyscf.scf.rohf.ROHF'> wavefunction has an internal instability
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.5
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_memory 4000 MB (current use 348 MB)
+num. doubly occ = 25  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 348 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.612160962520657  LUMO = -0.517677484638551
+Initial guess E= -541.095816096866  |g|= 0.393734
+macro= 0  E= -541.151122013067  delta_E= -0.0553059  |g|= 0.0428162  4 KF 17 JK
+macro= 1  E= -541.152477354691  delta_E= -0.00135534  |g|= 0.0013431  4 KF 21 JK
+macro= 2  E= -541.152478581719  delta_E= -1.22703e-06  |g|= 0.000630802  1 KF 5 JK
+macro= 3  E= -541.152478227691  delta_E= 3.54029e-07  |g|= 0.000324929  3 KF 12 JK
+macro= 4  E= -541.15247820951  delta_E= 1.81801e-08  |g|= 4.17014e-05  2 KF 11 JK
+macro= 5  E= -541.15247820921  delta_E= 3.00361e-10  |g|= 1.47296e-05  1 KF 6 JK
+Canonicalize SCF orbitals
+macro X = 6  E=-541.15247820921  |g|= 1.47296e-05  total 16 KF 79 JK
+converged SCF energy = -541.15247820921
+rohf_internal: lowest eigs of H = [-0.4553015   0.04798516  0.10406503]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction has an internal instability
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.5
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_memory 4000 MB (current use 353 MB)
+num. doubly occ = 25  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 353 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.691527998166791  LUMO = -0.483535789375914
+Initial guess E= -541.181565827874  |g|= 0.29002
+macro= 0  E= -541.231509850305  delta_E= -0.049944  |g|= 0.29002  2 KF 7 JK
+macro= 1  E= -541.23492291073  delta_E= -0.00341306  |g|= 6.1595e-05  6 KF 29 JK
+macro= 2  E= -541.234922910731  delta_E= -1.81899e-12  |g|= 1.37062e-05  1 KF 2 JK
+Canonicalize SCF orbitals
+macro X = 3  E=-541.234922910731  |g|= 1.37062e-05  total 10 KF 42 JK
+converged SCF energy = -541.234922910731
+rohf_internal: lowest eigs of H = [0.05552061 0.05607398 0.06981553]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction is stable in the internal stability analysis
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.5
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_memory 4000 MB (current use 354 MB)
+num. doubly occ = 25  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 354 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.695791833913573  LUMO = -0.482085113609874
+Initial guess E= -541.234922910732  |g|= 1.24036e-05
+macro= 0  E= -541.234922910793  delta_E= -6.09361e-11  |g|= 1.24036e-05  1 KF 3 JK
+Canonicalize SCF orbitals
+macro X = 1  E=-541.234922910793  |g|= 1.24036e-05  total 2 KF 5 JK
+converged SCF energy = -541.234922910793
+rohf_internal: lowest eigs of H = [0.05556118 0.05608625 0.06959915]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction is stable in the internal stability analysis
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderROHF'> ********
+method = SecondOrderROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.5
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_memory 4000 MB (current use 355 MB)
+num. doubly occ = 25  num. singly occ = 2
+******** <class 'pyscf.scf.rohf.ROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = rmf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 355 MB)
+Set conv_tol_grad to 3.16228e-05
+  HOMO = -0.695791979815189  LUMO = -0.482085472014399
+Initial guess E= -541.234922910793  |g|= 9.63094e-06
+macro= 0  E= -541.234922910795  delta_E= -2.04636e-12  |g|= 9.63094e-06  1 KF 2 JK
+Canonicalize SCF orbitals
+macro X = 1  E=-541.234922910795  |g|= 9.63094e-06  total 2 KF 4 JK
+converged SCF energy = -541.234922910795
+rohf_internal: lowest eigs of H = [0.05549133 0.0561208  0.06955743]
+<class 'pyscf.soscf.newton_ah.SecondOrderROHF'> wavefunction is stable in the internal stability analysis
+
+WARN: RCCSD method does not support ROHF method. ROHF object is converted to UHF object and UCCSD method is called.
+
+
+******** <class 'pyscf.cc.uccsd.UCCSD'> ********
+CC2 = 0
+CCSD nocc = (np.int64(17), np.int64(15)), nmo = (108, 108)
+frozen orbitals 10
+max_cycle = 100
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-06
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 355 MB)
+Init t2, MP2 energy = -0.807713214981569
+Init E_corr(UCCSD) = -0.81201719947046
+cycle = 1  E_corr(UCCSD) = -0.689880696489484  dE = 0.122136503  norm(t1,t2) = 0.324454
+cycle = 2  E_corr(UCCSD) = -0.807309013221934  dE = -0.117428317  norm(t1,t2) = 0.232445
+cycle = 3  E_corr(UCCSD) = -0.776966442051205  dE = 0.0303425712  norm(t1,t2) = 0.229844
+cycle = 4  E_corr(UCCSD) = -0.780209421434514  dE = -0.00324297938  norm(t1,t2) = 0.0528529
+cycle = 5  E_corr(UCCSD) = -0.791519599824775  dE = -0.0113101784  norm(t1,t2) = 0.0317248
+cycle = 6  E_corr(UCCSD) = -0.793923953968151  dE = -0.00240435414  norm(t1,t2) = 0.0196869
+cycle = 7  E_corr(UCCSD) = -0.794209791451904  dE = -0.000285837484  norm(t1,t2) = 0.0140601
+cycle = 8  E_corr(UCCSD) = -0.795444979242853  dE = -0.00123518779  norm(t1,t2) = 0.0103013
+cycle = 9  E_corr(UCCSD) = -0.796015564472418  dE = -0.00057058523  norm(t1,t2) = 0.00792009
+cycle = 10  E_corr(UCCSD) = -0.796257446094905  dE = -0.000241881622  norm(t1,t2) = 0.00661541
+cycle = 11  E_corr(UCCSD) = -0.796512702410996  dE = -0.000255256316  norm(t1,t2) = 0.00552722
+cycle = 12  E_corr(UCCSD) = -0.796778040741647  dE = -0.000265338331  norm(t1,t2) = 0.00504515
+cycle = 13  E_corr(UCCSD) = -0.796645540428455  dE = 0.000132500313  norm(t1,t2) = 0.00462982
+cycle = 14  E_corr(UCCSD) = -0.796934958086614  dE = -0.000289417658  norm(t1,t2) = 0.00437326
+cycle = 15  E_corr(UCCSD) = -0.797006614493484  dE = -7.16564069e-05  norm(t1,t2) = 0.00408324
+cycle = 16  E_corr(UCCSD) = -0.797143607597693  dE = -0.000136993104  norm(t1,t2) = 0.0038673
+cycle = 17  E_corr(UCCSD) = -0.79741345525956  dE = -0.000269847662  norm(t1,t2) = 0.00361199
+cycle = 18  E_corr(UCCSD) = -0.79763786151361  dE = -0.000224406254  norm(t1,t2) = 0.00325102
+cycle = 19  E_corr(UCCSD) = -0.798051281849882  dE = -0.000413420336  norm(t1,t2) = 0.00291464
+cycle = 20  E_corr(UCCSD) = -0.798131826421295  dE = -8.05445714e-05  norm(t1,t2) = 0.00248633
+cycle = 21  E_corr(UCCSD) = -0.798767656238436  dE = -0.000635829817  norm(t1,t2) = 0.00199941
+cycle = 22  E_corr(UCCSD) = -0.798349506649538  dE = 0.000418149589  norm(t1,t2) = 0.00187072
+cycle = 23  E_corr(UCCSD) = -0.798799116599604  dE = -0.00044960995  norm(t1,t2) = 0.00168334
+cycle = 24  E_corr(UCCSD) = -0.799044473415585  dE = -0.000245356816  norm(t1,t2) = 0.0011069
+cycle = 25  E_corr(UCCSD) = -0.799187426000036  dE = -0.000142952584  norm(t1,t2) = 0.000693717
+cycle = 26  E_corr(UCCSD) = -0.799264252005454  dE = -7.68260054e-05  norm(t1,t2) = 0.000486089
+cycle = 27  E_corr(UCCSD) = -0.799305840800287  dE = -4.15887948e-05  norm(t1,t2) = 0.000356842
+cycle = 28  E_corr(UCCSD) = -0.799333807821375  dE = -2.79670211e-05  norm(t1,t2) = 0.000288305
+cycle = 29  E_corr(UCCSD) = -0.799335023961834  dE = -1.21614046e-06  norm(t1,t2) = 0.000231292
+cycle = 30  E_corr(UCCSD) = -0.799336293686423  dE = -1.26972459e-06  norm(t1,t2) = 0.000196835
+cycle = 31  E_corr(UCCSD) = -0.799341146436419  dE = -4.85275e-06  norm(t1,t2) = 0.000174357
+cycle = 32  E_corr(UCCSD) = -0.799339297493587  dE = 1.84894283e-06  norm(t1,t2) = 0.000150732
+cycle = 33  E_corr(UCCSD) = -0.799342679815712  dE = -3.38232212e-06  norm(t1,t2) = 0.00013762
+cycle = 34  E_corr(UCCSD) = -0.799346884436661  dE = -4.20462095e-06  norm(t1,t2) = 0.000122624
+cycle = 35  E_corr(UCCSD) = -0.799351871517562  dE = -4.9870809e-06  norm(t1,t2) = 0.000112007
+cycle = 36  E_corr(UCCSD) = -0.799358899778935  dE = -7.02826137e-06  norm(t1,t2) = 0.000100966
+cycle = 37  E_corr(UCCSD) = -0.799366295803885  dE = -7.39602495e-06  norm(t1,t2) = 9.07384e-05
+cycle = 38  E_corr(UCCSD) = -0.799373172493543  dE = -6.87668966e-06  norm(t1,t2) = 7.85904e-05
+cycle = 39  E_corr(UCCSD) = -0.799380225440552  dE = -7.05294701e-06  norm(t1,t2) = 7.02135e-05
+cycle = 40  E_corr(UCCSD) = -0.799386699855926  dE = -6.47441537e-06  norm(t1,t2) = 5.9455e-05
+cycle = 41  E_corr(UCCSD) = -0.799392587495696  dE = -5.88763977e-06  norm(t1,t2) = 5.20762e-05
+cycle = 42  E_corr(UCCSD) = -0.799398205771427  dE = -5.61827573e-06  norm(t1,t2) = 4.38582e-05
+cycle = 43  E_corr(UCCSD) = -0.799403724614759  dE = -5.51884333e-06  norm(t1,t2) = 3.48569e-05
+cycle = 44  E_corr(UCCSD) = -0.799402741366949  dE = 9.83247811e-07  norm(t1,t2) = 2.86649e-05
+cycle = 45  E_corr(UCCSD) = -0.799409288714413  dE = -6.54734746e-06  norm(t1,t2) = 2.68243e-05
+cycle = 46  E_corr(UCCSD) = -0.799409353787588  dE = -6.50731746e-08  norm(t1,t2) = 1.96496e-05
+cycle = 47  E_corr(UCCSD) = -0.799411047662771  dE = -1.69387518e-06  norm(t1,t2) = 1.61403e-05
+cycle = 48  E_corr(UCCSD) = -0.799411592084759  dE = -5.44421987e-07  norm(t1,t2) = 1.35491e-05
+cycle = 49  E_corr(UCCSD) = -0.799412954732628  dE = -1.36264787e-06  norm(t1,t2) = 1.13295e-05
+cycle = 50  E_corr(UCCSD) = -0.79941467240902  dE = -1.71767639e-06  norm(t1,t2) = 9.18105e-06
+cycle = 51  E_corr(UCCSD) = -0.799416116187095  dE = -1.44377807e-06  norm(t1,t2) = 6.35438e-06
+cycle = 52  E_corr(UCCSD) = -0.799416169588527  dE = -5.34014328e-08  norm(t1,t2) = 5.00285e-06
+cycle = 53  E_corr(UCCSD) = -0.799417195620929  dE = -1.0260324e-06  norm(t1,t2) = 4.17039e-06
+cycle = 54  E_corr(UCCSD) = -0.799417190187868  dE = 5.43306078e-09  norm(t1,t2) = 3.15229e-06
+cycle = 55  E_corr(UCCSD) = -0.799417425594004  dE = -2.35406136e-07  norm(t1,t2) = 2.64816e-06
+cycle = 56  E_corr(UCCSD) = -0.799417445698512  dE = -2.01045078e-08  norm(t1,t2) = 2.2294e-06
+cycle = 57  E_corr(UCCSD) = -0.799417266115859  dE = 1.79582653e-07  norm(t1,t2) = 1.9401e-06
+cycle = 58  E_corr(UCCSD) = -0.799417176641395  dE = 8.94744638e-08  norm(t1,t2) = 1.59947e-06
+cycle = 59  E_corr(UCCSD) = -0.79941725731159  dE = -8.06701951e-08  norm(t1,t2) = 1.26469e-06
+cycle = 60  E_corr(UCCSD) = -0.799417217475267  dE = 3.98363229e-08  norm(t1,t2) = 1.13674e-06
+cycle = 61  E_corr(UCCSD) = -0.799417328599237  dE = -1.1112397e-07  norm(t1,t2) = 7.6326e-07
+cycle = 62  E_corr(UCCSD) = -0.799417320343795  dE = 8.25544189e-09  norm(t1,t2) = 5.71802e-07
+UCCSD converged
+E(UCCSD) = -542.0343402311385  E_corr = -0.7994173203437948
+UCCSD(T) correction = -0.0587937993687001
+spin = 2  ccsd(t) energy is: -542.0931340305071

@@ -5,7 +5,7 @@ d = 10 # distance between each cluster
 na = 2  # size of a cluster (monomer)
 nc = 1 # set as integer multiple of monomers
 s = 0 # spin of each monomer
-elmt = 'O'
+elmt = 'H'
 atoms = ""
 for n in range(nc*na):
     shift = ((n - n % na) // na) * (d-a)
@@ -17,7 +17,7 @@ mol.build()
 mf = scf.UHF(mol)
 e = mf.kernel()
 
-nfrozen = 2
+nfrozen = 0
 
 # from pyscf.cc import uccsd
 # from ad_afqmc.ccsd_pt import ccsd_pt
@@ -39,17 +39,20 @@ options = {'n_eql': 3,
             'n_ene_blocks': 5,
             'n_sr_blocks': 5,
             'n_blocks': 10,
-            'n_walkers': 100,
+            'n_walkers': 20,
             'seed': 2,
             'walker_type': 'uhf',
-            'trial': 'uccsd_pt2_ad', # ccsd_pt,ccsd_pt_ad,ccsd_pt2_ad, ucisd
+            'trial': 'uccsd_pt_ad', # ccsd_pt,ccsd_pt_ad,ccsd_pt2_ad, ucisd
             'dt':0.005,
             'free_projection':False,
             'ad_mode':None,
-            'use_gpu': True
+            'use_gpu': False
             }
 
 from ad_afqmc import pyscf_interface
-from ad_afqmc.ccsd_pt import sample_uccsd_pt2
-pyscf_interface.prep_afqmc(mycc,options,chol_cut=1e-5)
-sample_uccsd_pt2.run_afqmc(options)
+from ad_afqmc.ccsd_pt import sample_ccsd_pt2, sample_ccsd_pt
+from ad_afqmc.prop_unrestricted import prop_unrestricted
+#pyscf_interface.prep_afqmc(mycc,options,chol_cut=1e-5)
+#sample_ccsd_pt2.run_afqmc(options)
+prop_unrestricted.prep_afqmc(mycc,options,chol_cut=1e-6)
+prop_unrestricted.run_afqmc(options)

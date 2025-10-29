@@ -1,0 +1,343 @@
+#INFO: **** input file is /projects/yizh8382/projects/afqmc_ccpt/afqmc_ccsd_pt_data/w4_mr/s4/ccsd.py ****
+from pyscf import gto, scf, cc
+
+s = 0
+nfrozen = 20
+b = 'ccpvdz'
+sym = True
+
+atoms = '''
+S        0.000000    1.552343    0.921961 
+S        0.000000    1.068508   -0.921961 
+S        0.000000   -1.068508   -0.921961 
+S        0.000000   -1.552343    0.921961
+'''
+
+mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=sym)
+mol.build()
+
+mf = scf.RHF(mol)
+mf.kernel()
+
+stable = False
+for i in range(10):
+    print(f'mf stability test {i+1}')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'mf energy: {mf.e_tot}, stability {stable}')
+        break
+
+mycc = cc.CCSD(mf,frozen=nfrozen)
+e = mycc.kernel()
+et = mycc.ccsd_t()
+print('RCCSD(T) energy = ', mycc.e_tot + et)
+
+mf = scf.UHF(mol)
+mf.kernel()
+
+stable = False
+for i in range(10):
+    print(f'mf stability test {i+1}')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'mf energy: {mf.e_tot}, stability {stable}')
+        break
+
+mycc = cc.CCSD(mf,frozen=nfrozen)
+e = mycc.kernel()
+et = mycc.ccsd_t()
+print('UCCSD(T) energy = ', mycc.e_tot + et)
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='bnode0302.rc.int.colorado.edu', release='4.18.0-477.27.1.el8_8.x86_64', version='#1 SMP Thu Aug 31 10:29:22 EDT 2023', machine='x86_64')  Threads 28
+Python 3.10.2 | packaged by conda-forge | (main, Mar  8 2022, 15:52:01) [GCC 9.4.0]
+numpy 2.0.2  scipy 1.14.1  h5py 3.12.1
+Date: Tue Oct 28 23:37:21 2025
+PySCF version 2.9.0
+PySCF path  /projects/yizh8382/tools/lno_pyscf_gcc
+GIT HEAD (branch master) 142756584ed3963728cc1f6823286f4605811a6c
+
+[ENV] PYSCF_TMPDIR /scratch/alpine/yizh8382/pyscf
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 4
+[INPUT] num. electrons = 64
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry True subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 S      0.000000000000   1.552343000000   0.921961000000 AA    0.000000000000   2.933503121386   1.742253787530 Bohr   0.0
+[INPUT]  2 S      0.000000000000   1.068508000000  -0.921961000000 AA    0.000000000000   2.019187481907  -1.742253787530 Bohr   0.0
+[INPUT]  3 S      0.000000000000  -1.068508000000  -0.921961000000 AA    0.000000000000  -2.019187481907  -1.742253787530 Bohr   0.0
+[INPUT]  4 S      0.000000000000  -1.552343000000   0.921961000000 AA    0.000000000000  -2.933503121386   1.742253787530 Bohr   0.0
+
+nuclear repulsion = 333.699606873041
+point group symmetry = C2v
+symmetry origin: [0. 0. 0.]
+symmetry axis x: [-1. -0. -0.]
+symmetry axis y: [0. 1. 0.]
+symmetry axis z: [0. 0. 1.]
+num. orbitals of irrep A1 = 26
+num. orbitals of irrep A2 = 10
+num. orbitals of irrep B1 = 10
+num. orbitals of irrep B2 = 26
+number of shells = 20
+number of NR pGTOs = 164
+number of NR cGTOs = 72
+basis = ccpvdz
+ecp = {}
+CPU time:         6.49
+
+
+******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
+method = SymAdaptedRHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmp91nij9j7
+max_memory 4000 MB (current use 110 MB)
+Freeze 0 electrons in irreps []
+    64 free electrons in irreps A1 A2 B1 B2
+Set gradient conv threshold to 3.16228e-05
+Initial guess from minao.
+init E= -1590.74270501951
+HOMO (B1) = -0.234461704482199  LUMO (A2) = -0.144519240490762
+cycle= 1 E= -1589.96284036201  delta_E= 0.78  |g|= 0.466  |ddm|= 2.38
+HOMO (B1) = -0.313915078437636  LUMO (A2) = -0.10777654797327
+cycle= 2 E= -1589.97421026747  delta_E= -0.0114  |g|= 0.447  |ddm|= 0.878
+HOMO (B1) = -0.312209973284729  LUMO (A2) = -0.0806207050872036
+cycle= 3 E= -1590.03884886292  delta_E= -0.0646  |g|= 0.0543  |ddm|= 0.486
+HOMO (B1) = -0.302191557377022  LUMO (A2) = -0.0713356027642505
+cycle= 4 E= -1590.04030113801  delta_E= -0.00145  |g|= 0.0193  |ddm|= 0.0795
+HOMO (B1) = -0.30407906762478  LUMO (A2) = -0.0727507391157781
+cycle= 5 E= -1590.04066278642  delta_E= -0.000362  |g|= 0.007  |ddm|= 0.0511
+HOMO (B1) = -0.30347906572469  LUMO (A2) = -0.0730532942472694
+cycle= 6 E= -1590.04075481555  delta_E= -9.2e-05  |g|= 0.00291  |ddm|= 0.0318
+HOMO (B1) = -0.30325709763688  LUMO (A2) = -0.073065745905852
+cycle= 7 E= -1590.04077300179  delta_E= -1.82e-05  |g|= 0.00118  |ddm|= 0.0156
+HOMO (B1) = -0.303090037901274  LUMO (A2) = -0.0730218169530791
+cycle= 8 E= -1590.04077556717  delta_E= -2.57e-06  |g|= 0.000446  |ddm|= 0.00566
+HOMO (B1) = -0.303052273290405  LUMO (A2) = -0.0730510757491473
+cycle= 9 E= -1590.04077589489  delta_E= -3.28e-07  |g|= 0.000171  |ddm|= 0.00181
+HOMO (B1) = -0.303033557152904  LUMO (A2) = -0.0730497636504282
+cycle= 10 E= -1590.04077593735  delta_E= -4.25e-08  |g|= 3.09e-05  |ddm|= 0.000699
+HOMO (B1) = -0.303032196224397  LUMO (A2) = -0.0730521319528452
+cycle= 11 E= -1590.04077593883  delta_E= -1.48e-09  |g|= 6.05e-06  |ddm|= 0.000143
+HOMO (B1) = -0.303031850064103  LUMO (A2) = -0.073051994243195
+cycle= 12 E= -1590.04077593887  delta_E= -3.82e-11  |g|= 2.03e-06  |ddm|= 1.74e-05
+HOMO (B1) = -0.303031945850907  LUMO (A2) = -0.0730520078857511
+Extra cycle  E= -1590.04077593887  delta_E= -2.27e-12  |g|= 1.28e-06  |ddm|= 4.33e-06
+converged SCF energy = -1590.04077593887
+mf stability test 1
+rhf_internal: lowest eigs of H = [0.55145781 0.89368589 0.93307221]
+<class 'pyscf.scf.hf_symm.SymAdaptedRHF'> wavefunction is stable in the internal stability analysis
+
+
+******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
+method = SymAdaptedRHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmp91nij9j7
+max_memory 4000 MB (current use 302 MB)
+Freeze 0 electrons in irreps []
+    64 free electrons in irreps A1 A2 B1 B2
+Set gradient conv threshold to 3.16228e-05
+init E= -1590.04077593887
+HOMO (B1) = -0.303031874339509  LUMO (A2) = -0.0730520734275096
+cycle= 1 E= -1590.04077593886  delta_E= 5.91e-12  |g|= 1.29e-06  |ddm|= 2.77e-06
+HOMO (B1) = -0.303031906585744  LUMO (A2) = -0.0730520154723473
+Extra cycle  E= -1590.04077593886  delta_E= -4.55e-13  |g|= 1.13e-06  |ddm|= 2.63e-06
+converged SCF energy = -1590.04077593886
+mf stability test 2
+mf energy: -1590.0407759388627, stability True
+
+******** <class 'pyscf.cc.ccsd.CCSD'> ********
+CC2 = 0
+CCSD nocc = 12, nmo = 52
+frozen orbitals 20
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-05
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 302 MB)
+Init t2, MP2 energy = -1590.62513964425  E_corr(MP2) -0.584363705384293
+Init E_corr(CCSD) = -0.584363705384879
+cycle = 1  E_corr(CCSD) = -0.560333372736871  dE = 0.0240303326  norm(t1,t2) = 0.119193
+cycle = 2  E_corr(CCSD) = -0.594271765279929  dE = -0.0339383925  norm(t1,t2) = 0.0654529
+cycle = 3  E_corr(CCSD) = -0.588790808627844  dE = 0.00548095665  norm(t1,t2) = 0.0384897
+cycle = 4  E_corr(CCSD) = -0.590964927980778  dE = -0.00217411935  norm(t1,t2) = 0.010348
+cycle = 5  E_corr(CCSD) = -0.592272129553897  dE = -0.00130720157  norm(t1,t2) = 0.00532481
+cycle = 6  E_corr(CCSD) = -0.591870148391546  dE = 0.000401981162  norm(t1,t2) = 0.00183567
+cycle = 7  E_corr(CCSD) = -0.591769299104119  dE = 0.000100849287  norm(t1,t2) = 0.000634907
+cycle = 8  E_corr(CCSD) = -0.591796841220763  dE = -2.75421166e-05  norm(t1,t2) = 0.000341029
+cycle = 9  E_corr(CCSD) = -0.591799831336579  dE = -2.99011582e-06  norm(t1,t2) = 0.000176814
+cycle = 10  E_corr(CCSD) = -0.591795041669487  dE = 4.78966709e-06  norm(t1,t2) = 5.03904e-05
+cycle = 11  E_corr(CCSD) = -0.591796372471532  dE = -1.33080204e-06  norm(t1,t2) = 2.20266e-05
+cycle = 12  E_corr(CCSD) = -0.591795712770726  dE = 6.59700806e-07  norm(t1,t2) = 9.05897e-06
+cycle = 13  E_corr(CCSD) = -0.591795676431394  dE = 3.63393319e-08  norm(t1,t2) = 2.89705e-06
+CCSD converged
+E(CCSD) = -1590.632571615294  E_corr = -0.5917956764313937
+CCSD(T) correction = -0.0382440502214737
+RCCSD(T) energy =  -1590.6708156655156
+
+
+******** <class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> ********
+method = SymAdaptedUHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmp4r5pfelk
+max_memory 4000 MB (current use 512 MB)
+number electrons alpha = 32  beta = 32
+Freeze 0 electrons in irreps []
+    64 free electrons in irreps A1 A2 B1 B2
+Set gradient conv threshold to 3.16228e-05
+init E= -1590.69442590997
+alpha HOMO (B1) = -0.239438988822395  LUMO (A2) = -0.149660441723434
+beta  HOMO (B1) = -0.237819507680132  LUMO (A2) = -0.148686225863415
+cycle= 1 E= -1589.96146133406  delta_E= 0.733  |g|= 0.333  |ddm|= 1.67
+alpha HOMO (B1) = -0.313997961013312  LUMO (A2) = -0.107969565468103
+beta  HOMO (B1) = -0.314291307914809  LUMO (A2) = -0.108179694896354
+cycle= 2 E= -1589.97341364976  delta_E= -0.012  |g|= 0.318  |ddm|= 0.625
+alpha HOMO (B1) = -0.312077325136549  LUMO (A2) = -0.0805462905727878
+beta  HOMO (B1) = -0.312261343647568  LUMO (A2) = -0.0805800116720413
+cycle= 3 E= -1590.03882173471  delta_E= -0.0654  |g|= 0.0391  |ddm|= 0.346
+alpha HOMO (B1) = -0.302113318044815  LUMO (A2) = -0.0713815324347077
+beta  HOMO (B1) = -0.302281425382821  LUMO (A2) = -0.0714004472270214
+cycle= 4 E= -1590.04029729682  delta_E= -0.00148  |g|= 0.0138  |ddm|= 0.0561
+alpha HOMO (B1) = -0.304012086868597  LUMO (A2) = -0.0727591000906775
+beta  HOMO (B1) = -0.304154908636599  LUMO (A2) = -0.0727587184519554
+cycle= 5 E= -1590.04066482084  delta_E= -0.000368  |g|= 0.00491  |ddm|= 0.0365
+alpha HOMO (B1) = -0.303413050497982  LUMO (A2) = -0.0730472231554505
+beta  HOMO (B1) = -0.303530429761191  LUMO (A2) = -0.0730348480120931
+cycle= 6 E= -1590.04075448371  delta_E= -8.97e-05  |g|= 0.00206  |ddm|= 0.022
+alpha HOMO (B1) = -0.303206902305552  LUMO (A2) = -0.0730772040233456
+beta  HOMO (B1) = -0.303310084581205  LUMO (A2) = -0.0730598138686151
+cycle= 7 E= -1590.04077296936  delta_E= -1.85e-05  |g|= 0.000837  |ddm|= 0.0112
+alpha HOMO (B1) = -0.303042943223534  LUMO (A2) = -0.0730317888069936
+beta  HOMO (B1) = -0.303140105771466  LUMO (A2) = -0.0730145869048814
+cycle= 8 E= -1590.04077555985  delta_E= -2.59e-06  |g|= 0.000316  |ddm|= 0.00404
+alpha HOMO (B1) = -0.303005016345157  LUMO (A2) = -0.0730583404493325
+beta  HOMO (B1) = -0.303097961050284  LUMO (A2) = -0.073042683238756
+cycle= 9 E= -1590.04077588947  delta_E= -3.3e-07  |g|= 0.000121  |ddm|= 0.00129
+alpha HOMO (B1) = -0.302989732957302  LUMO (A2) = -0.0730571666025736
+beta  HOMO (B1) = -0.303077738449519  LUMO (A2) = -0.0730428251771335
+cycle= 10 E= -1590.04077593205  delta_E= -4.26e-08  |g|= 2.33e-05  |ddm|= 0.000494
+alpha HOMO (B1) = -0.302990152944847  LUMO (A2) = -0.0730589365250652
+beta  HOMO (B1) = -0.303074211789669  LUMO (A2) = -0.0730452787698204
+cycle= 11 E= -1590.04077593395  delta_E= -1.9e-09  |g|= 9.85e-06  |ddm|= 0.000103
+alpha HOMO (B1) = -0.302991610939607  LUMO (A2) = -0.0730585017287505
+beta  HOMO (B1) = -0.303072020433044  LUMO (A2) = -0.0730454213241158
+cycle= 12 E= -1590.0407759344  delta_E= -4.51e-10  |g|= 8.62e-06  |ddm|= 2.98e-05
+alpha HOMO (B1) = -0.302993059415249  LUMO (A2) = -0.0730583259818811
+beta  HOMO (B1) = -0.303070813974233  LUMO (A2) = -0.0730456723667839
+Extra cycle  E= -1590.04077593469  delta_E= -2.91e-10  |g|= 8.27e-06  |ddm|= 1.97e-05
+converged SCF energy = -1590.04077593469  <S^2> = 6.1884945e-07  2S+1 = 1.0000012
+mf stability test 1
+uhf_internal: lowest eigs of H = [0.02690259 0.25825203 0.27268128]
+<class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> wavefunction is stable in the internal stability analysis
+
+
+******** <class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> ********
+method = SymAdaptedUHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /scratch/alpine/yizh8382/pyscf/tmp4r5pfelk
+max_memory 4000 MB (current use 539 MB)
+number electrons alpha = 32  beta = 32
+Freeze 0 electrons in irreps []
+    64 free electrons in irreps A1 A2 B1 B2
+Set gradient conv threshold to 3.16228e-05
+init E= -1590.04077593469
+alpha HOMO (B1) = -0.302994269112729  LUMO (A2) = -0.0730581700317094
+beta  HOMO (B1) = -0.303069456490106  LUMO (A2) = -0.0730459318216587
+cycle= 1 E= -1590.04077593496  delta_E= -2.71e-10  |g|= 8e-06  |ddm|= 1.89e-05
+alpha HOMO (B1) = -0.302995544849365  LUMO (A2) = -0.0730579191173547
+beta  HOMO (B1) = -0.30306824918395  LUMO (A2) = -0.0730460830087249
+Extra cycle  E= -1590.04077593522  delta_E= -2.59e-10  |g|= 7.73e-06  |ddm|= 1.83e-05
+converged SCF energy = -1590.04077593522  <S^2> = 5.4100471e-07  2S+1 = 1.0000011
+mf stability test 2
+mf energy: -1590.0407759352165, stability True
+
+******** <class 'pyscf.cc.uccsd.UCCSD'> ********
+CC2 = 0
+CCSD nocc = (12, 12), nmo = (52, 52)
+frozen orbitals 20
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-06
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 511 MB)
+Init t2, MP2 energy = -0.58436366924424
+Init E_corr(UCCSD) = -0.584363669378903
+cycle = 1  E_corr(UCCSD) = -0.560333364948132  dE = 0.0240303044  norm(t1,t2) = 0.181276
+cycle = 2  E_corr(UCCSD) = -0.594271752418618  dE = -0.0339383875  norm(t1,t2) = 0.0837211
+cycle = 3  E_corr(UCCSD) = -0.589135987448916  dE = 0.00513576497  norm(t1,t2) = 0.0562263
+cycle = 4  E_corr(UCCSD) = -0.590986331839444  dE = -0.00185034439  norm(t1,t2) = 0.0143401
+cycle = 5  E_corr(UCCSD) = -0.592213981372397  dE = -0.00122764953  norm(t1,t2) = 0.00762732
+cycle = 6  E_corr(UCCSD) = -0.591845274211966  dE = 0.00036870716  norm(t1,t2) = 0.0025968
+cycle = 7  E_corr(UCCSD) = -0.591765878520758  dE = 7.93956912e-05  norm(t1,t2) = 0.00073847
+cycle = 8  E_corr(UCCSD) = -0.591791338054904  dE = -2.54595341e-05  norm(t1,t2) = 0.000423109
+cycle = 9  E_corr(UCCSD) = -0.591798353315565  dE = -7.01526066e-06  norm(t1,t2) = 0.000208662
+cycle = 10  E_corr(UCCSD) = -0.591796843533556  dE = 1.50978201e-06  norm(t1,t2) = 7.42992e-05
+cycle = 11  E_corr(UCCSD) = -0.591795858784386  dE = 9.8474917e-07  norm(t1,t2) = 3.27143e-05
+cycle = 12  E_corr(UCCSD) = -0.591795753885743  dE = 1.04898643e-07  norm(t1,t2) = 1.36767e-05
+cycle = 13  E_corr(UCCSD) = -0.59179571218798  dE = 4.16977629e-08  norm(t1,t2) = 4.03042e-06
+cycle = 14  E_corr(UCCSD) = -0.591795669706789  dE = 4.24811909e-08  norm(t1,t2) = 1.99239e-06
+cycle = 15  E_corr(UCCSD) = -0.591795600794281  dE = 6.89125084e-08  norm(t1,t2) = 3.94726e-07
+UCCSD converged
+E(UCCSD) = -1590.632571536011  E_corr = -0.5917956007942808
+UCCSD(T) correction = -0.0382440023891755
+UCCSD(T) energy =  -1590.6708155384

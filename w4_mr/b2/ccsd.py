@@ -1,18 +1,20 @@
 from pyscf import gto, scf, cc
 
-s = 0
+s = 2
 nfrozen = 2
 b = 'ccpvdz'
+sym = False
 
 atoms = '''
-B        0.000000    0.000000   -0.748417
-N        0.000000    0.000000    0.534583
+B        0.000000    0.000000    0.793777 
+B        0.000000    0.000000   -0.793777 
 '''
 
-mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=False)
+mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=sym)
 mol.build()
 
 mf = scf.RHF(mol)
+mf.level_shift = 0.4
 mf.kernel()
 
 stable = False
@@ -21,6 +23,7 @@ for i in range(10):
     if not stable:
         mo_i, _, stable,_ = mf.stability(return_status=True)
         dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf = mf.newton()
         mf.kernel(dm0=dm)
     elif stable:
         print(f'mf energy: {mf.e_tot}, stability {stable}')
@@ -38,8 +41,9 @@ stable = False
 for i in range(10):
     print(f'mf stability test {i+1}')
     if not stable:
-        mo_i, _, stable,_ = mf.stability(return_status=True)
+        mo_i, _, stable,_ = mf.stability(external=True,return_status=True)
         dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf = mf.newton()
         mf.kernel(dm0=dm)
     elif stable:
         print(f'mf energy: {mf.e_tot}, stability {stable}')

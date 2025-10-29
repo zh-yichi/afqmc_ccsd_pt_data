@@ -1,0 +1,1647 @@
+#INFO: **** input file is /projects/yizh8382/projects/afqmc_ccpt/afqmc_ccsd_pt_data/w4_mr/of/ccsd.py ****
+from pyscf import gto, scf, cc
+
+s = 1
+nfrozen = 2
+b = 'ccpvdz'
+sym = True
+
+atoms = '''
+O        0.000000    0.000000   -0.716295 
+F        0.000000    0.000000    0.636707
+'''
+
+mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=sym)
+mol.build()
+
+mf = scf.RHF(mol)
+mf.chkfile = './mf.chk'
+mf.init_guess = 'chk'
+mf.level_shift = 0.1
+mf.max_cycle = 100
+mf.kernel()
+
+stable = False
+for i in range(10):
+    print(f'mf stability test {i+1}')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf = mf.newton()
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'mf energy: {mf.e_tot}, stability {stable}')
+        break
+
+mycc = cc.CCSD(mf,frozen=nfrozen)
+e = mycc.kernel()
+et = mycc.ccsd_t()
+print('RCCSD(T) energy = ', mycc.e_tot + et)
+
+mf = scf.UHF(mol)
+mf.chkfile = './umf.chk'
+mf.init_guess = 'chk'
+mf.level_shift = 0.4
+mf.max_cycle = 100
+mf.kernel()
+
+stable = False
+for i in range(10):
+    print(f'mf stability test {i+1}')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf = mf.newton()
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'mf energy: {mf.e_tot}, stability {stable}')
+        break
+
+mycc = cc.CCSD(mf,frozen=nfrozen)
+e = mycc.kernel()
+et = mycc.ccsd_t()
+print('UCCSD(T) energy = ', mycc.e_tot + et)
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='bnode0302.rc.int.colorado.edu', release='4.18.0-477.27.1.el8_8.x86_64', version='#1 SMP Thu Aug 31 10:29:22 EDT 2023', machine='x86_64')  Threads 28
+Python 3.10.2 | packaged by conda-forge | (main, Mar  8 2022, 15:52:01) [GCC 9.4.0]
+numpy 2.0.2  scipy 1.14.1  h5py 3.12.1
+Date: Tue Oct 28 23:30:30 2025
+PySCF version 2.9.0
+PySCF path  /projects/yizh8382/tools/lno_pyscf_gcc
+GIT HEAD (branch master) 142756584ed3963728cc1f6823286f4605811a6c
+
+[ENV] PYSCF_TMPDIR /scratch/alpine/yizh8382/pyscf
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 2
+[INPUT] num. electrons = 17
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 1
+[INPUT] symmetry True subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 O      0.000000000000   0.000000000000  -0.716295000000 AA    0.000000000000   0.000000000000  -1.353601374395 Bohr   0.0
+[INPUT]  2 F      0.000000000000   0.000000000000   0.636707000000 AA    0.000000000000   0.000000000000   1.203201851593 Bohr   0.0
+
+nuclear repulsion = 28.1601647198156
+point group symmetry = Coov
+symmetry origin: [0.00000000e+00 0.00000000e+00 3.33481081e-07]
+symmetry axis x: [1. 0. 0.]
+symmetry axis y: [0. 1. 0.]
+symmetry axis z: [0. 0. 1.]
+num. orbitals of irrep A1 = 12
+num. orbitals of irrep E1x = 6
+num. orbitals of irrep E1y = 6
+num. orbitals of irrep E2x = 2
+num. orbitals of irrep E2y = 2
+number of shells = 10
+number of NR pGTOs = 52
+number of NR cGTOs = 28
+basis = ccpvdz
+ecp = {}
+CPU time:         6.46
+
+
+******** <class 'pyscf.scf.hf_symm.SymAdaptedROHF'> ********
+method = SymAdaptedROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.1
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./mf.chk
+max_memory 4000 MB (current use 109 MB)
+num. doubly occ = 8  num. singly occ = 1
+Freeze 0 electrons in irreps []
+    17 free electrons in irreps A1 E1x E1y E2x E2y
+Set gradient conv threshold to 3.16228e-05
+init E= -174.129361124803
+HOMO (E1y) = -0.556221173032844  LUMO (A1) = 0.328263909934181
+cycle= 1 E= -174.081903571546  delta_E= 0.0475  |g|= 0.28  |ddm|= 0.347
+HOMO (E1y) = -0.516529940306287  LUMO (A1) = 0.33167547405892
+cycle= 2 E= -174.099467486722  delta_E= -0.0176  |g|= 0.386  |ddm|= 0.297
+HOMO (E1y) = -0.55175371509161  LUMO (A1) = 0.328113267657176
+cycle= 3 E= -174.107073097028  delta_E= -0.00761  |g|= 0.109  |ddm|= 0.188
+HOMO (E1y) = -0.556847749911998  LUMO (A1) = 0.327190491473763
+cycle= 4 E= -174.103998725772  delta_E= 0.00307  |g|= 0.113  |ddm|= 0.0293
+HOMO (E1y) = -0.557758754552929  LUMO (A1) = 0.326010013026328
+cycle= 5 E= -174.104150002241  delta_E= -0.000151  |g|= 0.115  |ddm|= 0.00527
+HOMO (E1y) = -0.558885189629457  LUMO (A1) = 0.324248292766391
+cycle= 6 E= -174.104301001354  delta_E= -0.000151  |g|= 0.113  |ddm|= 0.00579
+HOMO (E1y) = -0.558242587097848  LUMO (A1) = 0.325425618649614
+cycle= 7 E= -174.103829113001  delta_E= 0.000472  |g|= 0.114  |ddm|= 0.00467
+HOMO (E1y) = -0.558235206572856  LUMO (A1) = 0.325435291828359
+cycle= 8 E= -174.103830568813  delta_E= -1.46e-06  |g|= 0.114  |ddm|= 0.000155
+HOMO (E1y) = -0.559908092050485  LUMO (A1) = 0.32650706466156
+cycle= 9 E= -174.098153221197  delta_E= 0.00568  |g|= 0.159  |ddm|= 0.0415
+HOMO (E1y) = -0.561618749531161  LUMO (A1) = 0.325878909984544
+cycle= 10 E= -174.09148267463  delta_E= 0.00667  |g|= 0.21  |ddm|= 0.0293
+HOMO (E1y) = -0.559725324868769  LUMO (A1) = 0.325197168679008
+cycle= 11 E= -174.097972215759  delta_E= -0.00649  |g|= 0.164  |ddm|= 0.0266
+HOMO (E1y) = -0.560191634554548  LUMO (A1) = 0.324440467402478
+cycle= 12 E= -174.09714961952  delta_E= 0.000823  |g|= 0.174  |ddm|= 0.0104
+HOMO (E1y) = -0.560577509541313  LUMO (A1) = 0.323284207301182
+cycle= 13 E= -174.099699058151  delta_E= -0.00255  |g|= 0.149  |ddm|= 0.0184
+HOMO (E1y) = -0.560833250782245  LUMO (A1) = 0.322815188753887
+cycle= 14 E= -174.099422490304  delta_E= 0.000277  |g|= 0.151  |ddm|= 0.00157
+HOMO (E1y) = -0.560177527150352  LUMO (A1) = 0.323953761820248
+cycle= 15 E= -174.099991555363  delta_E= -0.000569  |g|= 0.144  |ddm|= 0.00764
+HOMO (E1y) = -0.559124258808934  LUMO (A1) = 0.324663535457289
+cycle= 16 E= -174.101884695379  delta_E= -0.00189  |g|= 0.131  |ddm|= 0.0106
+HOMO (E1y) = -0.559149942687652  LUMO (A1) = 0.324241096280405
+cycle= 17 E= -174.102035024316  delta_E= -0.00015  |g|= 0.128  |ddm|= 0.00294
+HOMO (E1y) = -0.558282332405167  LUMO (A1) = 0.32523219698107
+cycle= 18 E= -174.102750880733  delta_E= -0.000716  |g|= 0.124  |ddm|= 0.00454
+HOMO (E1y) = -0.559366542374559  LUMO (A1) = 0.323775497001218
+cycle= 19 E= -174.103335946605  delta_E= -0.000585  |g|= 0.116  |ddm|= 0.0136
+HOMO (E1y) = -0.556918868567874  LUMO (A1) = 0.324085589183329
+cycle= 20 E= -174.104141810446  delta_E= -0.000806  |g|= 0.114  |ddm|= 0.00838
+HOMO (E1y) = -0.558809721935168  LUMO (A1) = 0.323764846583412
+cycle= 21 E= -174.103729970338  delta_E= 0.000412  |g|= 0.115  |ddm|= 0.0055
+HOMO (E1y) = -0.558110948480884  LUMO (A1) = 0.324488102536577
+cycle= 22 E= -174.104084361198  delta_E= -0.000354  |g|= 0.112  |ddm|= 0.00701
+HOMO (E1y) = -0.556584763929441  LUMO (A1) = 0.325761750984612
+cycle= 23 E= -174.104608873223  delta_E= -0.000525  |g|= 0.113  |ddm|= 0.0116
+HOMO (E1y) = -0.559064660358178  LUMO (A1) = 0.324251263161521
+cycle= 24 E= -174.10295898291  delta_E= 0.00165  |g|= 0.118  |ddm|= 0.0136
+HOMO (E1y) = -0.558711583099429  LUMO (A1) = 0.324600456764964
+cycle= 25 E= -174.102357318505  delta_E= 0.000602  |g|= 0.121  |ddm|= 0.00464
+HOMO (E1y) = -0.558908449171971  LUMO (A1) = 0.324244738200674
+cycle= 26 E= -174.102354343287  delta_E= 2.98e-06  |g|= 0.12  |ddm|= 0.00325
+HOMO (E1y) = -0.555769695518716  LUMO (A1) = 0.326581886493148
+cycle= 27 E= -174.103578164444  delta_E= -0.00122  |g|= 0.119  |ddm|= 0.0141
+HOMO (E1y) = -0.555974773531002  LUMO (A1) = 0.326407760116574
+cycle= 28 E= -174.103489482706  delta_E= 8.87e-05  |g|= 0.119  |ddm|= 0.000646
+HOMO (E1y) = -0.555046488556503  LUMO (A1) = 0.327499494494454
+cycle= 29 E= -174.103705827761  delta_E= -0.000216  |g|= 0.117  |ddm|= 0.00223
+HOMO (E1y) = -0.555029960847293  LUMO (A1) = 0.327523405197843
+cycle= 30 E= -174.103898135677  delta_E= -0.000192  |g|= 0.117  |ddm|= 0.00354
+HOMO (E1y) = -0.554609460213296  LUMO (A1) = 0.327934124578071
+cycle= 31 E= -174.103614869825  delta_E= 0.000283  |g|= 0.119  |ddm|= 0.00418
+HOMO (E1y) = -0.554773785112142  LUMO (A1) = 0.327698525434322
+cycle= 32 E= -174.103578075509  delta_E= 3.68e-05  |g|= 0.119  |ddm|= 0.00201
+HOMO (E1y) = -0.554666703238566  LUMO (A1) = 0.327473650811503
+cycle= 33 E= -174.103964411047  delta_E= -0.000386  |g|= 0.117  |ddm|= 0.00399
+HOMO (E1y) = -0.554324598772099  LUMO (A1) = 0.327804266994554
+cycle= 34 E= -174.104371982825  delta_E= -0.000408  |g|= 0.115  |ddm|= 0.00325
+HOMO (E1y) = -0.554270018893049  LUMO (A1) = 0.327696534656057
+cycle= 35 E= -174.104751662408  delta_E= -0.00038  |g|= 0.113  |ddm|= 0.00352
+HOMO (E1y) = -0.554956307213016  LUMO (A1) = 0.326638844991623
+cycle= 36 E= -174.1050424198  delta_E= -0.000291  |g|= 0.111  |ddm|= 0.00477
+HOMO (E1y) = -0.55534512565075  LUMO (A1) = 0.326323855421656
+cycle= 37 E= -174.10501337104  delta_E= 2.9e-05  |g|= 0.11  |ddm|= 0.00227
+HOMO (E1y) = -0.555393144503544  LUMO (A1) = 0.326281424651404
+cycle= 38 E= -174.105023066126  delta_E= -9.7e-06  |g|= 0.11  |ddm|= 0.00111
+HOMO (E1y) = -0.557716833012808  LUMO (A1) = 0.324917140089392
+cycle= 39 E= -174.103422306842  delta_E= 0.0016  |g|= 0.119  |ddm|= 0.0124
+HOMO (E1y) = -0.558532696674518  LUMO (A1) = 0.324607712290205
+cycle= 40 E= -174.103572717756  delta_E= -0.00015  |g|= 0.116  |ddm|= 0.00757
+HOMO (E1y) = -0.558624889545121  LUMO (A1) = 0.323607978266217
+cycle= 41 E= -174.103650049733  delta_E= -7.73e-05  |g|= 0.117  |ddm|= 0.00409
+HOMO (E1y) = -0.556708304682989  LUMO (A1) = 0.325608560589388
+cycle= 42 E= -174.104302930856  delta_E= -0.000653  |g|= 0.116  |ddm|= 0.0101
+HOMO (E1y) = -0.557665386809643  LUMO (A1) = 0.324807551338763
+cycle= 43 E= -174.10377444647  delta_E= 0.000528  |g|= 0.118  |ddm|= 0.0061
+HOMO (E1y) = -0.559791545808985  LUMO (A1) = 0.32267487174528
+cycle= 44 E= -174.102699197412  delta_E= 0.00108  |g|= 0.122  |ddm|= 0.00915
+HOMO (E1y) = -0.556958847711973  LUMO (A1) = 0.326872985069771
+cycle= 45 E= -174.103497044927  delta_E= -0.000798  |g|= 0.114  |ddm|= 0.0114
+HOMO (E1y) = -0.557486542599153  LUMO (A1) = 0.326010239970055
+cycle= 46 E= -174.102733955997  delta_E= 0.000763  |g|= 0.12  |ddm|= 0.00894
+HOMO (E1y) = -0.556587422924111  LUMO (A1) = 0.327212620211852
+cycle= 47 E= -174.103092026461  delta_E= -0.000358  |g|= 0.118  |ddm|= 0.00339
+HOMO (E1y) = -0.556066472979726  LUMO (A1) = 0.327229915199431
+cycle= 48 E= -174.104184167468  delta_E= -0.00109  |g|= 0.111  |ddm|= 0.00991
+HOMO (E1y) = -0.556728441395096  LUMO (A1) = 0.326697792110417
+cycle= 49 E= -174.103667698881  delta_E= 0.000516  |g|= 0.115  |ddm|= 0.00646
+HOMO (E1y) = -0.555895532422318  LUMO (A1) = 0.327862873803233
+cycle= 50 E= -174.104388905151  delta_E= -0.000721  |g|= 0.111  |ddm|= 0.00854
+HOMO (E1y) = -0.55587398278227  LUMO (A1) = 0.327680070607527
+cycle= 51 E= -174.104403554317  delta_E= -1.46e-05  |g|= 0.11  |ddm|= 0.00247
+HOMO (E1y) = -0.555746683936618  LUMO (A1) = 0.328153817120746
+cycle= 52 E= -174.104233052444  delta_E= 0.000171  |g|= 0.109  |ddm|= 0.00738
+HOMO (E1y) = -0.555697787752041  LUMO (A1) = 0.328077573028385
+cycle= 53 E= -174.104345381525  delta_E= -0.000112  |g|= 0.109  |ddm|= 0.00258
+HOMO (E1y) = -0.55553387805148  LUMO (A1) = 0.328209100082758
+cycle= 54 E= -174.104341784871  delta_E= 3.6e-06  |g|= 0.109  |ddm|= 0.000604
+HOMO (E1y) = -0.554767135151265  LUMO (A1) = 0.328418371791069
+cycle= 55 E= -174.104411330899  delta_E= -6.95e-05  |g|= 0.109  |ddm|= 0.00291
+HOMO (E1y) = -0.554876233801994  LUMO (A1) = 0.327924703918219
+cycle= 56 E= -174.104316842505  delta_E= 9.45e-05  |g|= 0.109  |ddm|= 0.00235
+HOMO (E1y) = -0.556029012307797  LUMO (A1) = 0.326729446349726
+cycle= 57 E= -174.104041326905  delta_E= 0.000276  |g|= 0.11  |ddm|= 0.00504
+HOMO (E1y) = -0.555262458053225  LUMO (A1) = 0.327573277884265
+cycle= 58 E= -174.104066996163  delta_E= -2.57e-05  |g|= 0.111  |ddm|= 0.00538
+HOMO (E1y) = -0.55547210479605  LUMO (A1) = 0.327652059331673
+cycle= 59 E= -174.103966662079  delta_E= 0.0001  |g|= 0.113  |ddm|= 0.0024
+HOMO (E1y) = -0.556135496005762  LUMO (A1) = 0.326668394430275
+cycle= 60 E= -174.104133019083  delta_E= -0.000166  |g|= 0.11  |ddm|= 0.00627
+HOMO (E1y) = -0.557978433208777  LUMO (A1) = 0.32461795100645
+cycle= 61 E= -174.10375211899  delta_E= 0.000381  |g|= 0.113  |ddm|= 0.0048
+HOMO (E1y) = -0.55809769276917  LUMO (A1) = 0.324598177138263
+cycle= 62 E= -174.1037387451  delta_E= 1.34e-05  |g|= 0.111  |ddm|= 0.00691
+HOMO (E1y) = -0.557606116338594  LUMO (A1) = 0.324961302563983
+cycle= 63 E= -174.103784349734  delta_E= -4.56e-05  |g|= 0.11  |ddm|= 0.00148
+HOMO (E1y) = -0.558203449330679  LUMO (A1) = 0.324421326996821
+cycle= 64 E= -174.103718436827  delta_E= 6.59e-05  |g|= 0.111  |ddm|= 0.00265
+HOMO (E1y) = -0.556165597009926  LUMO (A1) = 0.326261937604607
+cycle= 65 E= -174.104527117706  delta_E= -0.000809  |g|= 0.108  |ddm|= 0.00676
+HOMO (E1y) = -0.557491426417538  LUMO (A1) = 0.324918171910482
+cycle= 66 E= -174.103638784477  delta_E= 0.000888  |g|= 0.115  |ddm|= 0.0188
+HOMO (E1y) = -0.556800102338829  LUMO (A1) = 0.326083683145282
+cycle= 67 E= -174.103396041776  delta_E= 0.000243  |g|= 0.118  |ddm|= 0.00381
+HOMO (E1y) = -0.555911824284898  LUMO (A1) = 0.326683318361789
+cycle= 68 E= -174.103831928564  delta_E= -0.000436  |g|= 0.114  |ddm|= 0.00446
+HOMO (E1y) = -0.55560438811287  LUMO (A1) = 0.326993773663786
+cycle= 69 E= -174.104319101826  delta_E= -0.000487  |g|= 0.111  |ddm|= 0.00589
+HOMO (E1y) = -0.555996982174149  LUMO (A1) = 0.326691980721423
+cycle= 70 E= -174.104092995878  delta_E= 0.000226  |g|= 0.11  |ddm|= 0.0044
+HOMO (E1y) = -0.556563661329317  LUMO (A1) = 0.325825894995169
+cycle= 71 E= -174.103136685536  delta_E= 0.000956  |g|= 0.122  |ddm|= 0.0194
+HOMO (E1y) = -0.556143876688038  LUMO (A1) = 0.326133304598373
+cycle= 72 E= -174.103468682055  delta_E= -0.000332  |g|= 0.12  |ddm|= 0.00398
+HOMO (E1y) = -0.555369811306205  LUMO (A1) = 0.326765309204347
+cycle= 73 E= -174.104141664846  delta_E= -0.000673  |g|= 0.111  |ddm|= 0.0169
+HOMO (E1y) = -0.555173850663463  LUMO (A1) = 0.327076650905157
+cycle= 74 E= -174.104720218609  delta_E= -0.000579  |g|= 0.109  |ddm|= 0.00464
+HOMO (E1y) = -0.555777920879593  LUMO (A1) = 0.326579440914723
+cycle= 75 E= -174.104666650761  delta_E= 5.36e-05  |g|= 0.109  |ddm|= 0.00478
+HOMO (E1y) = -0.556829606530659  LUMO (A1) = 0.32541027698129
+cycle= 76 E= -174.104414975401  delta_E= 0.000252  |g|= 0.11  |ddm|= 0.00507
+HOMO (E1y) = -0.557489906125944  LUMO (A1) = 0.324867778439624
+cycle= 77 E= -174.104320437674  delta_E= 9.45e-05  |g|= 0.111  |ddm|= 0.0046
+HOMO (E1y) = -0.558299580856005  LUMO (A1) = 0.323949919349389
+cycle= 78 E= -174.104325065963  delta_E= -4.63e-06  |g|= 0.11  |ddm|= 0.00509
+HOMO (E1y) = -0.557774471287615  LUMO (A1) = 0.324370540858333
+cycle= 79 E= -174.104509767971  delta_E= -0.000185  |g|= 0.11  |ddm|= 0.00307
+HOMO (E1y) = -0.557771254198178  LUMO (A1) = 0.324291695394137
+cycle= 80 E= -174.104402151872  delta_E= 0.000108  |g|= 0.11  |ddm|= 0.00256
+HOMO (E1y) = -0.558492711669267  LUMO (A1) = 0.323865955546193
+cycle= 81 E= -174.104337214465  delta_E= 6.49e-05  |g|= 0.11  |ddm|= 0.00335
+HOMO (E1y) = -0.558308282134156  LUMO (A1) = 0.324050011846548
+cycle= 82 E= -174.104349384183  delta_E= -1.22e-05  |g|= 0.11  |ddm|= 0.00338
+HOMO (E1y) = -0.556980719404076  LUMO (A1) = 0.325726036900245
+cycle= 83 E= -174.104113866381  delta_E= 0.000236  |g|= 0.111  |ddm|= 0.00425
+HOMO (E1y) = -0.557001477842081  LUMO (A1) = 0.325789876114617
+cycle= 84 E= -174.10412368783  delta_E= -9.82e-06  |g|= 0.111  |ddm|= 0.00304
+HOMO (E1y) = -0.556022379069844  LUMO (A1) = 0.327042225222995
+cycle= 85 E= -174.104459060139  delta_E= -0.000335  |g|= 0.109  |ddm|= 0.0061
+HOMO (E1y) = -0.555746235045197  LUMO (A1) = 0.327340083649088
+cycle= 86 E= -174.104587360758  delta_E= -0.000128  |g|= 0.108  |ddm|= 0.00325
+HOMO (E1y) = -0.556534305750165  LUMO (A1) = 0.326912773979705
+cycle= 87 E= -174.104287261371  delta_E= 0.0003  |g|= 0.109  |ddm|= 0.00387
+HOMO (E1y) = -0.556487606375367  LUMO (A1) = 0.326207824382098
+cycle= 88 E= -174.104398822897  delta_E= -0.000112  |g|= 0.11  |ddm|= 0.00627
+HOMO (E1y) = -0.558146085147515  LUMO (A1) = 0.324645245083234
+cycle= 89 E= -174.103763604746  delta_E= 0.000635  |g|= 0.111  |ddm|= 0.00719
+HOMO (E1y) = -0.557762060408211  LUMO (A1) = 0.325386367227137
+cycle= 90 E= -174.103778921465  delta_E= -1.53e-05  |g|= 0.112  |ddm|= 0.00687
+HOMO (E1y) = -0.556381862436973  LUMO (A1) = 0.327208005988484
+cycle= 91 E= -174.103523108485  delta_E= 0.000256  |g|= 0.114  |ddm|= 0.00425
+HOMO (E1y) = -0.558666121291526  LUMO (A1) = 0.324600144477144
+cycle= 92 E= -174.103139544548  delta_E= 0.000384  |g|= 0.114  |ddm|= 0.00826
+HOMO (E1y) = -0.557207573083922  LUMO (A1) = 0.326243314462873
+cycle= 93 E= -174.103751138807  delta_E= -0.000612  |g|= 0.112  |ddm|= 0.00689
+HOMO (E1y) = -0.558497258461055  LUMO (A1) = 0.324616417972611
+cycle= 94 E= -174.103526091043  delta_E= 0.000225  |g|= 0.113  |ddm|= 0.00523
+HOMO (E1y) = -0.556671394590491  LUMO (A1) = 0.3255285707162
+cycle= 95 E= -174.1046300495  delta_E= -0.0011  |g|= 0.11  |ddm|= 0.00926
+HOMO (E1y) = -0.557856327290542  LUMO (A1) = 0.324808320981952
+cycle= 96 E= -174.104193206581  delta_E= 0.000437  |g|= 0.11  |ddm|= 0.0086
+HOMO (E1y) = -0.556490411959122  LUMO (A1) = 0.326350569360801
+cycle= 97 E= -174.104663076088  delta_E= -0.00047  |g|= 0.109  |ddm|= 0.00499
+HOMO (E1y) = -0.555962684924664  LUMO (A1) = 0.327123423560244
+cycle= 98 E= -174.104793365969  delta_E= -0.00013  |g|= 0.109  |ddm|= 0.00428
+HOMO (E1y) = -0.555176161065222  LUMO (A1) = 0.328039251714241
+cycle= 99 E= -174.104888214032  delta_E= -9.48e-05  |g|= 0.109  |ddm|= 0.00394
+HOMO (E1y) = -0.554919899373189  LUMO (A1) = 0.328496520751163
+cycle= 100 E= -174.104765653272  delta_E= 0.000123  |g|= 0.109  |ddm|= 0.00158
+SCF not converged.
+SCF energy = -174.104765653272
+mf stability test 1
+rohf_internal: lowest eigs of H = [0.21447117 2.14891802 2.79752765]
+<class 'pyscf.scf.hf_symm.SymAdaptedROHF'> wavefunction is stable in the internal stability analysis
+Freeze 0 electrons in irreps []
+    17 free electrons in irreps A1 E1x E1y E2x E2y
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderSymAdaptedROHF'> ********
+method = SecondOrderSymAdaptedROHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.1
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./mf.chk
+max_memory 4000 MB (current use 134 MB)
+num. doubly occ = 8  num. singly occ = 1
+******** <class 'pyscf.scf.hf_symm.SymAdaptedROHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./mf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 134 MB)
+Set conv_tol_grad to 3.16228e-05
+HOMO (E1y) = -0.553201581705323  LUMO (A1) = 0.228761748331033
+Initial guess E= -174.106553711775  |g|= 0.108441
+macro= 0  E= -174.124389406305  delta_E= -0.0178357  |g|= 0.108441  2 KF 8 JK
+macro= 1  E= -174.12799575252  delta_E= -0.00360635  |g|= 0.146159  2 KF 5 JK
+macro= 2  E= -174.126348438457  delta_E= 0.00164731  |g|= 0.0501376  2 KF 5 JK
+macro= 3  E= -174.128012849494  delta_E= -0.00166441  |g|= 0.102944  2 KF 5 JK
+macro= 4  E= -174.126751658634  delta_E= 0.00126119  |g|= 0.0597084  2 KF 5 JK
+macro= 5  E= -174.127752967642  delta_E= -0.00100131  |g|= 0.0980908  2 KF 5 JK
+macro= 6  E= -174.127608304497  delta_E= 0.000144663  |g|= 0.0648988  2 KF 5 JK
+macro= 7  E= -174.127233668786  delta_E= 0.000374636  |g|= 0.0812922  2 KF 5 JK
+macro= 8  E= -174.127600620829  delta_E= -0.000366952  |g|= 0.0789617  2 KF 5 JK
+macro= 9  E= -174.126957180339  delta_E= 0.00064344  |g|= 0.0817915  2 KF 5 JK
+macro= 10  E= -174.127584580534  delta_E= -0.0006274  |g|= 0.0859718  2 KF 5 JK
+macro= 11  E= -174.127033111562  delta_E= 0.000551469  |g|= 0.0819192  2 KF 5 JK
+macro= 12  E= -174.12757700355  delta_E= -0.000543892  |g|= 0.0838909  2 KF 5 JK
+macro= 13  E= -174.127048496225  delta_E= 0.000528507  |g|= 0.0821236  2 KF 5 JK
+macro= 14  E= -174.127571893842  delta_E= -0.000523398  |g|= 0.0834205  2 KF 5 JK
+macro= 15  E= -174.127040366573  delta_E= 0.000531527  |g|= 0.0822881  2 KF 5 JK
+macro= 16  E= -174.127569794715  delta_E= -0.000529428  |g|= 0.083582  2 KF 5 JK
+macro= 17  E= -174.127034629772  delta_E= 0.000535165  |g|= 0.0823573  2 KF 5 JK
+macro= 18  E= -174.127567097113  delta_E= -0.000532467  |g|= 0.083684  2 KF 5 JK
+macro= 19  E= -174.12702975832  delta_E= 0.000537339  |g|= 0.0824411  2 KF 5 JK
+macro= 20  E= -174.127564915658  delta_E= -0.000535157  |g|= 0.0837708  2 KF 5 JK
+macro= 21  E= -174.127023807064  delta_E= 0.000541109  |g|= 0.0825147  2 KF 5 JK
+macro= 22  E= -174.127562879936  delta_E= -0.000539073  |g|= 0.083888  2 KF 5 JK
+macro= 23  E= -174.127017671828  delta_E= 0.000545208  |g|= 0.0825843  2 KF 5 JK
+macro= 24  E= -174.127560896876  delta_E= -0.000543225  |g|= 0.0840108  2 KF 5 JK
+macro= 25  E= -174.127011512927  delta_E= 0.000549384  |g|= 0.0826524  2 KF 5 JK
+macro= 26  E= -174.127558932256  delta_E= -0.000547419  |g|= 0.0841346  2 KF 5 JK
+macro= 27  E= -174.127005322808  delta_E= 0.000553609  |g|= 0.08272  2 KF 5 JK
+macro= 28  E= -174.12755697649  delta_E= -0.000551654  |g|= 0.0842592  2 KF 5 JK
+macro= 29  E= -174.126999122142  delta_E= 0.000557854  |g|= 0.0827874  2 KF 5 JK
+macro= 30  E= -174.127555020103  delta_E= -0.000555898  |g|= 0.0843839  2 KF 5 JK
+macro= 31  E= -174.126992928874  delta_E= 0.000562091  |g|= 0.0828546  2 KF 5 JK
+macro= 32  E= -174.127553060068  delta_E= -0.000560131  |g|= 0.0845083  2 KF 5 JK
+macro= 33  E= -174.126986749473  delta_E= 0.000566311  |g|= 0.0829217  2 KF 5 JK
+macro= 34  E= -174.127551095562  delta_E= -0.000564346  |g|= 0.0846321  2 KF 5 JK
+macro= 35  E= -174.126980588164  delta_E= 0.000570507  |g|= 0.0829889  2 KF 5 JK
+macro= 36  E= -174.127549126575  delta_E= -0.000568538  |g|= 0.0847553  2 KF 5 JK
+macro= 37  E= -174.126974448467  delta_E= 0.000574678  |g|= 0.083056  2 KF 5 JK
+macro= 38  E= -174.127547153533  delta_E= -0.000572705  |g|= 0.0848777  2 KF 5 JK
+macro= 39  E= -174.126968333259  delta_E= 0.00057882  |g|= 0.0831231  2 KF 5 JK
+macro= 40  E= -174.1275451771  delta_E= -0.000576844  |g|= 0.0849994  2 KF 5 JK
+macro= 41  E= -174.126962245081  delta_E= 0.000582932  |g|= 0.0831901  2 KF 5 JK
+macro= 42  E= -174.127543198043  delta_E= -0.000580953  |g|= 0.0851201  2 KF 5 JK
+macro= 43  E= -174.126956186323  delta_E= 0.000587012  |g|= 0.083257  2 KF 5 JK
+macro= 44  E= -174.12754121718  delta_E= -0.000585031  |g|= 0.08524  2 KF 5 JK
+macro= 45  E= -174.126950159277  delta_E= 0.000591058  |g|= 0.0833238  2 KF 5 JK
+macro= 46  E= -174.127539235351  delta_E= -0.000589076  |g|= 0.085359  2 KF 5 JK
+macro= 47  E= -174.126944166158  delta_E= 0.000595069  |g|= 0.0833905  2 KF 5 JK
+macro= 48  E= -174.127537253408  delta_E= -0.000593087  |g|= 0.085477  2 KF 5 JK
+macro= 49  E= -174.126938209119  delta_E= 0.000599044  |g|= 0.083457  2 KF 5 JK
+macro= 50  E= -174.127535272209  delta_E= -0.000597063  |g|= 0.085594  2 KF 5 JK
+macro= 51  E= -174.126932290252  delta_E= 0.000602982  |g|= 0.0835233  2 KF 5 JK
+macro= 52  E= -174.12753329261  delta_E= -0.000601002  |g|= 0.08571  2 KF 5 JK
+macro= 53  E= -174.126926411593  delta_E= 0.000606881  |g|= 0.0835894  2 KF 5 JK
+macro= 54  E= -174.127531315464  delta_E= -0.000604904  |g|= 0.0858249  2 KF 5 JK
+macro= 55  E= -174.126920575116  delta_E= 0.00061074  |g|= 0.0836552  2 KF 5 JK
+macro= 56  E= -174.127529341622  delta_E= -0.000608767  |g|= 0.0859387  2 KF 5 JK
+macro= 57  E= -174.126914782732  delta_E= 0.000614559  |g|= 0.0837208  2 KF 5 JK
+macro= 58  E= -174.127527371925  delta_E= -0.000612589  |g|= 0.0860513  2 KF 5 JK
+macro= 59  E= -174.126909036289  delta_E= 0.000618336  |g|= 0.0837861  2 KF 5 JK
+macro= 60  E= -174.127525407206  delta_E= -0.000616371  |g|= 0.0861628  2 KF 5 JK
+macro= 61  E= -174.126903337569  delta_E= 0.00062207  |g|= 0.0838511  2 KF 5 JK
+macro= 62  E= -174.127523448292  delta_E= -0.000620111  |g|= 0.0862732  2 KF 5 JK
+macro= 63  E= -174.126897688285  delta_E= 0.00062576  |g|= 0.0839157  2 KF 5 JK
+macro= 64  E= -174.127521495994  delta_E= -0.000623808  |g|= 0.0863823  2 KF 5 JK
+macro= 65  E= -174.12689209008  delta_E= 0.000629406  |g|= 0.0839799  2 KF 5 JK
+macro= 66  E= -174.127519551113  delta_E= -0.000627461  |g|= 0.0864902  2 KF 5 JK
+macro= 67  E= -174.126886544526  delta_E= 0.000633007  |g|= 0.0840438  2 KF 5 JK
+macro= 68  E= -174.127517614436  delta_E= -0.00063107  |g|= 0.0865968  2 KF 5 JK
+macro= 69  E= -174.126881053123  delta_E= 0.000636561  |g|= 0.0841073  2 KF 5 JK
+macro= 70  E= -174.127515686735  delta_E= -0.000634634  |g|= 0.0867021  2 KF 5 JK
+macro= 71  E= -174.126875617295  delta_E= 0.000640069  |g|= 0.0841703  2 KF 5 JK
+macro= 72  E= -174.127513768765  delta_E= -0.000638151  |g|= 0.0868062  2 KF 5 JK
+macro= 73  E= -174.126870238393  delta_E= 0.00064353  |g|= 0.0842329  2 KF 5 JK
+macro= 74  E= -174.127511861263  delta_E= -0.000641623  |g|= 0.0869089  2 KF 5 JK
+macro= 75  E= -174.126864917693  delta_E= 0.000646944  |g|= 0.084295  2 KF 5 JK
+macro= 76  E= -174.127509964949  delta_E= -0.000645047  |g|= 0.0870103  2 KF 5 JK
+macro= 77  E= -174.126859656395  delta_E= 0.000650309  |g|= 0.0843566  2 KF 5 JK
+macro= 78  E= -174.127508080523  delta_E= -0.000648424  |g|= 0.0871104  2 KF 5 JK
+macro= 79  E= -174.126854455621  delta_E= 0.000653625  |g|= 0.0844178  2 KF 5 JK
+macro= 80  E= -174.127506208665  delta_E= -0.000651753  |g|= 0.0872091  2 KF 5 JK
+macro= 81  E= -174.126849316419  delta_E= 0.000656892  |g|= 0.0844783  2 KF 5 JK
+macro= 82  E= -174.127504350033  delta_E= -0.000655034  |g|= 0.0873064  2 KF 5 JK
+macro= 83  E= -174.126844239761  delta_E= 0.00066011  |g|= 0.0845384  2 KF 5 JK
+macro= 84  E= -174.127502505263  delta_E= -0.000658266  |g|= 0.0874024  2 KF 5 JK
+macro= 85  E= -174.126839226543  delta_E= 0.000663279  |g|= 0.0845979  2 KF 5 JK
+macro= 86  E= -174.12750067497  delta_E= -0.000661448  |g|= 0.0874969  2 KF 5 JK
+macro= 87  E= -174.126834277585  delta_E= 0.000666397  |g|= 0.0846568  2 KF 5 JK
+macro= 88  E= -174.127498859743  delta_E= -0.000664582  |g|= 0.0875901  2 KF 5 JK
+macro= 89  E= -174.126829393634  delta_E= 0.000669466  |g|= 0.0847151  2 KF 5 JK
+macro= 90  E= -174.12749706015  delta_E= -0.000667667  |g|= 0.0876819  2 KF 5 JK
+macro= 91  E= -174.126824575363  delta_E= 0.000672485  |g|= 0.0847728  2 KF 5 JK
+macro= 92  E= -174.127495276733  delta_E= -0.000670701  |g|= 0.0877722  2 KF 5 JK
+macro= 93  E= -174.126819823373  delta_E= 0.000675453  |g|= 0.0848299  2 KF 5 JK
+macro= 94  E= -174.12749351001  delta_E= -0.000673687  |g|= 0.0878612  2 KF 5 JK
+macro= 95  E= -174.126815138193  delta_E= 0.000678372  |g|= 0.0848863  2 KF 5 JK
+macro= 96  E= -174.127491760473  delta_E= -0.000676622  |g|= 0.0879487  2 KF 5 JK
+macro= 97  E= -174.126810520281  delta_E= 0.00068124  |g|= 0.0849421  2 KF 5 JK
+macro= 98  E= -174.12749002859  delta_E= -0.000679508  |g|= 0.0880348  2 KF 5 JK
+macro= 99  E= -174.126805970028  delta_E= 0.000684059  |g|= 0.0849973  2 KF 5 JK
+Canonicalize SCF orbitals
+macro X = 100  E=-174.126805970028  |g|= 0.0849973  total 201 KF 604 JK
+SCF not converged.
+SCF energy = -174.126805970028
+
+WARN: Orbital degeneracy broken
+
+mf stability test 2
+mf energy: -174.12680597002787, stability True
+
+WARN: RCCSD method does not support ROHF method. ROHF object is converted to UHF object and UCCSD method is called.
+
+
+******** <class 'pyscf.cc.uccsd.UCCSD'> ********
+CC2 = 0
+CCSD nocc = (7, 6), nmo = (26, 26)
+frozen orbitals 2
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-06
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 194 MB)
+Init t2, MP2 energy = -0.341346349366046
+Init E_corr(UCCSD) = -0.346855373978641
+cycle = 1  E_corr(UCCSD) = -0.348561634031036  dE = -0.00170626005  norm(t1,t2) = 0.0835482
+cycle = 2  E_corr(UCCSD) = -0.359753465672671  dE = -0.0111918316  norm(t1,t2) = 0.0297025
+cycle = 3  E_corr(UCCSD) = -0.359721010018078  dE = 3.24556546e-05  norm(t1,t2) = 0.0276346
+cycle = 4  E_corr(UCCSD) = -0.363270942889511  dE = -0.00354993287  norm(t1,t2) = 0.0173702
+cycle = 5  E_corr(UCCSD) = -0.363377573575238  dE = -0.000106630686  norm(t1,t2) = 0.0065175
+cycle = 6  E_corr(UCCSD) = -0.363131283769829  dE = 0.000246289805  norm(t1,t2) = 0.00190955
+cycle = 7  E_corr(UCCSD) = -0.363215868040728  dE = -8.45842709e-05  norm(t1,t2) = 0.000639426
+cycle = 8  E_corr(UCCSD) = -0.363210738941628  dE = 5.1290991e-06  norm(t1,t2) = 0.000209925
+cycle = 9  E_corr(UCCSD) = -0.363202621644466  dE = 8.11729716e-06  norm(t1,t2) = 9.44802e-05
+cycle = 10  E_corr(UCCSD) = -0.363204023800686  dE = -1.40215622e-06  norm(t1,t2) = 2.59184e-05
+cycle = 11  E_corr(UCCSD) = -0.363204109856192  dE = -8.60555054e-08  norm(t1,t2) = 1.15692e-05
+cycle = 12  E_corr(UCCSD) = -0.36320411094738  dE = -1.09118853e-09  norm(t1,t2) = 6.08039e-06
+cycle = 13  E_corr(UCCSD) = -0.363203827163472  dE = 2.83783908e-07  norm(t1,t2) = 2.36339e-06
+cycle = 14  E_corr(UCCSD) = -0.363203774258003  dE = 5.2905469e-08  norm(t1,t2) = 9.49405e-07
+UCCSD converged
+E(UCCSD) = -174.4900097442859  E_corr = -0.3632037742580029
+UCCSD(T) correction = -0.00801295344042755
+RCCSD(T) energy =  -174.49802269772636
+
+
+******** <class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> ********
+method = SymAdaptedUHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.4
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./umf.chk
+max_memory 4000 MB (current use 433 MB)
+number electrons alpha = 9  beta = 8
+Freeze 0 electrons in irreps []
+    17 free electrons in irreps A1 E1x E1y E2x E2y
+Set gradient conv threshold to 3.16228e-05
+init E= -174.134611757527
+alpha HOMO (E1x) = -0.632583105847132  LUMO (A1) = 0.612630925120574
+beta  HOMO (E1x) = 0.420897910511406  LUMO (E1x) = 0.420897910511406
+
+WARN: beta-E1x HOMO 0.420897910511406 > system LUMO 0.420897910511406
+
+
+WARN: beta-E1y LUMO 0.420897910511406 < system HOMO 0.420897910511406
+
+cycle= 1 E= -174.11083202881  delta_E= 0.0238  |g|= 0.172  |ddm|= 1.03
+alpha HOMO (E1x) = -0.623683107191782  LUMO (A1) = 0.579864016189325
+beta  HOMO (E1x) = -0.520563036445264  LUMO (E1x) = -0.520563036445264
+
+WARN: beta-E1x HOMO -0.520563036445264 > system LUMO -0.520563036445264
+
+
+WARN: beta-E1y LUMO -0.520563036445264 < system HOMO -0.520563036445264
+
+cycle= 2 E= -174.100545993466  delta_E= 0.0103  |g|= 0.191  |ddm|= 0.27
+alpha HOMO (E1x) = -0.604472601875111  LUMO (A1) = 0.59075288527675
+beta  HOMO (E1x) = -0.505922054852779  LUMO (E1x) = -0.505922054852779
+
+WARN: beta-E1x HOMO -0.505922054852779 > system LUMO -0.505922054852779
+
+
+WARN: beta-E1y LUMO -0.505922054852779 < system HOMO -0.505922054852779
+
+cycle= 3 E= -174.119446306872  delta_E= -0.0189  |g|=  0.1  |ddm|= 0.0981
+alpha HOMO (E1x) = -0.588111487942023  LUMO (A1) = 0.609078810693934
+beta  HOMO (E1x) = -0.514494577800585  LUMO (E1x) = -0.514494577800585
+
+WARN: beta-E1x HOMO -0.514494577800585 > system LUMO -0.514494577800585
+
+
+WARN: beta-E1y LUMO -0.514494577800585 < system HOMO -0.514494577800585
+
+cycle= 4 E= -174.111762896599  delta_E= 0.00768  |g|= 0.129  |ddm|= 0.0714
+alpha HOMO (E1x) = -0.588585329175371  LUMO (A1) = 0.60654639164157
+beta  HOMO (E1x) = -0.521035900335012  LUMO (E1x) = -0.521035900335012
+
+WARN: beta-E1x HOMO -0.521035900335012 > system LUMO -0.521035900335012
+
+
+WARN: beta-E1y LUMO -0.521035900335012 < system HOMO -0.521035900335012
+
+cycle= 5 E= -174.111292672511  delta_E= 0.00047  |g|= 0.129  |ddm|= 0.0191
+alpha HOMO (E1x) = -0.586102671571796  LUMO (A1) = 0.607317348552716
+beta  HOMO (E1x) = -0.523446896197862  LUMO (E1x) = -0.523446896197862
+
+WARN: beta-E1x HOMO -0.523446896197862 > system LUMO -0.523446896197862
+
+
+WARN: beta-E1y LUMO -0.523446896197862 < system HOMO -0.523446896197862
+
+cycle= 6 E= -174.109709202548  delta_E= 0.00158  |g|= 0.134  |ddm|= 0.0205
+alpha HOMO (E1x) = -0.586582856521297  LUMO (A1) = 0.60793548804318
+beta  HOMO (E1x) = -0.521794193298888  LUMO (E1x) = -0.521794193298888
+
+WARN: beta-E1x HOMO -0.521794193298888 > system LUMO -0.521794193298888
+
+
+WARN: beta-E1y LUMO -0.521794193298888 < system HOMO -0.521794193298888
+
+cycle= 7 E= -174.109943257336  delta_E= -0.000234  |g|= 0.136  |ddm|= 0.012
+alpha HOMO (E1x) = -0.585765486620221  LUMO (A1) = 0.612428648417268
+beta  HOMO (E1x) = -0.521674080112626  LUMO (E1x) = -0.521674080112626
+
+WARN: beta-E1x HOMO -0.521674080112626 > system LUMO -0.521674080112626
+
+
+WARN: beta-E1y LUMO -0.521674080112626 < system HOMO -0.521674080112626
+
+cycle= 8 E= -174.107628616681  delta_E= 0.00231  |g|= 0.153  |ddm|= 0.0603
+alpha HOMO (E1x) = -0.588251420682985  LUMO (A1) = 0.609934431016146
+beta  HOMO (E1x) = -0.525154314524369  LUMO (E1x) = -0.525154314524369
+
+WARN: beta-E1x HOMO -0.525154314524369 > system LUMO -0.525154314524369
+
+
+WARN: beta-E1y LUMO -0.525154314524369 < system HOMO -0.525154314524369
+
+cycle= 9 E= -174.102507131532  delta_E= 0.00512  |g|= 0.177  |ddm|= 0.0563
+alpha HOMO (E1x) = -0.584157587773128  LUMO (A1) = 0.614749053179543
+beta  HOMO (E1x) = -0.523767540973108  LUMO (E1x) = -0.523767540973108
+
+WARN: beta-E1x HOMO -0.523767540973108 > system LUMO -0.523767540973108
+
+
+WARN: beta-E1y LUMO -0.523767540973108 < system HOMO -0.523767540973108
+
+cycle= 10 E= -174.103348034672  delta_E= -0.000841  |g|= 0.172  |ddm|= 0.0221
+alpha HOMO (E1x) = -0.58472046516569  LUMO (A1) = 0.614482940494505
+beta  HOMO (E1x) = -0.525098753622315  LUMO (E1x) = -0.525098753622315
+
+WARN: beta-E1x HOMO -0.525098753622315 > system LUMO -0.525098753622315
+
+
+WARN: beta-E1y LUMO -0.525098753622315 < system HOMO -0.525098753622315
+
+cycle= 11 E= -174.102199028832  delta_E= 0.00115  |g|= 0.174  |ddm|= 0.0638
+alpha HOMO (E1x) = -0.586039273263195  LUMO (A1) = 0.606251013405586
+beta  HOMO (E1x) = -0.526569090289236  LUMO (E1x) = -0.526569090289236
+
+WARN: beta-E1x HOMO -0.526569090289236 > system LUMO -0.526569090289236
+
+
+WARN: beta-E1y LUMO -0.526569090289236 < system HOMO -0.526569090289236
+
+cycle= 12 E= -174.108301409232  delta_E= -0.0061  |g|= 0.144  |ddm|= 0.0319
+alpha HOMO (E1x) = -0.586167110431597  LUMO (A1) = 0.603813412783879
+beta  HOMO (E1x) = -0.524927533813138  LUMO (E1x) = -0.524927533813138
+
+WARN: beta-E1x HOMO -0.524927533813138 > system LUMO -0.524927533813138
+
+
+WARN: beta-E1y LUMO -0.524927533813138 < system HOMO -0.524927533813138
+
+cycle= 13 E= -174.109541746618  delta_E= -0.00124  |g|= 0.138  |ddm|= 0.0625
+alpha HOMO (E1x) = -0.585542685084172  LUMO (A1) = 0.603116067379737
+beta  HOMO (E1x) = -0.528380707890389  LUMO (E1x) = -0.528380707890389
+
+WARN: beta-E1x HOMO -0.528380707890389 > system LUMO -0.528380707890389
+
+
+WARN: beta-E1y LUMO -0.528380707890389 < system HOMO -0.528380707890389
+
+cycle= 14 E= -174.107886430415  delta_E= 0.00166  |g|= 0.144  |ddm|= 0.0129
+alpha HOMO (E1x) = -0.585756972356074  LUMO (A1) = 0.604675548280548
+beta  HOMO (E1x) = -0.523421171603062  LUMO (E1x) = -0.523421171603062
+
+WARN: beta-E1x HOMO -0.523421171603062 > system LUMO -0.523421171603062
+
+
+WARN: beta-E1y LUMO -0.523421171603062 < system HOMO -0.523421171603062
+
+cycle= 15 E= -174.109724707335  delta_E= -0.00184  |g|= 0.134  |ddm|= 0.0594
+alpha HOMO (E1x) = -0.585709579029583  LUMO (A1) = 0.603373598200102
+beta  HOMO (E1x) = -0.521722723045796  LUMO (E1x) = -0.521722723045796
+
+WARN: beta-E1x HOMO -0.521722723045796 > system LUMO -0.521722723045796
+
+
+WARN: beta-E1y LUMO -0.521722723045796 < system HOMO -0.521722723045796
+
+cycle= 16 E= -174.111207958882  delta_E= -0.00148  |g|= 0.127  |ddm|= 0.0148
+alpha HOMO (E1x) = -0.584985500588  LUMO (A1) = 0.611736540062377
+beta  HOMO (E1x) = -0.520318755608787  LUMO (E1x) = -0.520318755608787
+
+WARN: beta-E1x HOMO -0.520318755608787 > system LUMO -0.520318755608787
+
+
+WARN: beta-E1y LUMO -0.520318755608787 < system HOMO -0.520318755608787
+
+cycle= 17 E= -174.110226450709  delta_E= 0.000982  |g|= 0.131  |ddm|= 0.013
+alpha HOMO (E1x) = -0.583653724290632  LUMO (A1) = 0.616539510941537
+beta  HOMO (E1x) = -0.518974256667859  LUMO (E1x) = -0.518974256667859
+
+WARN: beta-E1x HOMO -0.518974256667859 > system LUMO -0.518974256667859
+
+
+WARN: beta-E1y LUMO -0.518974256667859 < system HOMO -0.518974256667859
+
+cycle= 18 E= -174.108046666073  delta_E= 0.00218  |g|= 0.147  |ddm|= 0.0241
+alpha HOMO (E1x) = -0.58310682221533  LUMO (A1) = 0.61590537512492
+beta  HOMO (E1x) = -0.521268099008422  LUMO (E1x) = -0.521268099008422
+
+WARN: beta-E1x HOMO -0.521268099008422 > system LUMO -0.521268099008422
+
+
+WARN: beta-E1y LUMO -0.521268099008422 < system HOMO -0.521268099008422
+
+cycle= 19 E= -174.108029059407  delta_E= 1.76e-05  |g|= 0.144  |ddm|= 0.0193
+alpha HOMO (E1x) = -0.584033048413661  LUMO (A1) = 0.614891280496349
+beta  HOMO (E1x) = -0.517853943798204  LUMO (E1x) = -0.517853943798204
+
+WARN: beta-E1x HOMO -0.517853943798204 > system LUMO -0.517853943798204
+
+
+WARN: beta-E1y LUMO -0.517853943798204 < system HOMO -0.517853943798204
+
+cycle= 20 E= -174.108559673635  delta_E= -0.000531  |g|= 0.142  |ddm|= 0.0111
+alpha HOMO (E1x) = -0.584627680504049  LUMO (A1) = 0.614419019102853
+beta  HOMO (E1x) = -0.51888491257514  LUMO (E1x) = -0.51888491257514
+
+WARN: beta-E1x HOMO -0.51888491257514 > system LUMO -0.51888491257514
+
+
+WARN: beta-E1y LUMO -0.51888491257514 < system HOMO -0.51888491257514
+
+cycle= 21 E= -174.107534335083  delta_E= 0.00103  |g|= 0.144  |ddm|= 0.0338
+alpha HOMO (E1x) = -0.587310615899527  LUMO (A1) = 0.609592713608962
+beta  HOMO (E1x) = -0.526649734024228  LUMO (E1x) = -0.526649734024228
+
+WARN: beta-E1x HOMO -0.526649734024228 > system LUMO -0.526649734024228
+
+
+WARN: beta-E1y LUMO -0.526649734024228 < system HOMO -0.526649734024228
+
+cycle= 22 E= -174.109725194109  delta_E= -0.00219  |g|= 0.131  |ddm|= 0.0587
+alpha HOMO (E1x) = -0.587452785179683  LUMO (A1) = 0.607175815054508
+beta  HOMO (E1x) = -0.529278600219034  LUMO (E1x) = -0.529278600219034
+
+WARN: beta-E1x HOMO -0.529278600219034 > system LUMO -0.529278600219034
+
+
+WARN: beta-E1y LUMO -0.529278600219034 < system HOMO -0.529278600219034
+
+cycle= 23 E= -174.110178438955  delta_E= -0.000453  |g|= 0.129  |ddm|= 0.0458
+alpha HOMO (E1x) = -0.589066740674484  LUMO (A1) = 0.605322693390476
+beta  HOMO (E1x) = -0.529502778792369  LUMO (E1x) = -0.529502778792369
+
+WARN: beta-E1x HOMO -0.529502778792369 > system LUMO -0.529502778792369
+
+
+WARN: beta-E1y LUMO -0.529502778792369 < system HOMO -0.529502778792369
+
+cycle= 24 E= -174.109677246719  delta_E= 0.000501  |g|= 0.131  |ddm|= 0.0298
+alpha HOMO (E1x) = -0.587777779200968  LUMO (A1) = 0.618597266464168
+beta  HOMO (E1x) = -0.525375621199229  LUMO (E1x) = -0.525375621199229
+
+WARN: beta-E1x HOMO -0.525375621199229 > system LUMO -0.525375621199229
+
+
+WARN: beta-E1y LUMO -0.525375621199229 < system HOMO -0.525375621199229
+
+cycle= 25 E= -174.11031050251  delta_E= -0.000633  |g|= 0.126  |ddm|= 0.106
+alpha HOMO (E1x) = -0.588546027013932  LUMO (A1) = 0.623156103370907
+beta  HOMO (E1x) = -0.527744865978123  LUMO (E1x) = -0.527744865978123
+
+WARN: beta-E1x HOMO -0.527744865978123 > system LUMO -0.527744865978123
+
+
+WARN: beta-E1y LUMO -0.527744865978123 < system HOMO -0.527744865978123
+
+cycle= 26 E= -174.108935953151  delta_E= 0.00137  |g|= 0.131  |ddm|= 0.0327
+alpha HOMO (E1x) = -0.585222347681251  LUMO (A1) = 0.62356934603284
+beta  HOMO (E1x) = -0.524222063592339  LUMO (E1x) = -0.524222063592339
+
+WARN: beta-E1x HOMO -0.524222063592339 > system LUMO -0.524222063592339
+
+
+WARN: beta-E1y LUMO -0.524222063592339 < system HOMO -0.524222063592339
+
+cycle= 27 E= -174.111329200658  delta_E= -0.00239  |g|= 0.125  |ddm|= 0.0509
+alpha HOMO (E1x) = -0.581198973213283  LUMO (A1) = 0.61642691721153
+beta  HOMO (E1x) = -0.528938729003642  LUMO (E1x) = -0.528938729003642
+
+WARN: beta-E1x HOMO -0.528938729003642 > system LUMO -0.528938729003642
+
+
+WARN: beta-E1y LUMO -0.528938729003642 < system HOMO -0.528938729003642
+
+cycle= 28 E= -174.111801250856  delta_E= -0.000472  |g|= 0.121  |ddm|= 0.0641
+alpha HOMO (E1x) = -0.582072399646078  LUMO (A1) = 0.615632574172321
+beta  HOMO (E1x) = -0.524548269148534  LUMO (E1x) = -0.524548269148534
+
+WARN: beta-E1x HOMO -0.524548269148534 > system LUMO -0.524548269148534
+
+
+WARN: beta-E1y LUMO -0.524548269148534 < system HOMO -0.524548269148534
+
+cycle= 29 E= -174.112133585851  delta_E= -0.000332  |g|= 0.117  |ddm|= 0.0406
+alpha HOMO (E1x) = -0.583117817668347  LUMO (A1) = 0.609639013307177
+beta  HOMO (E1x) = -0.525751743752956  LUMO (E1x) = -0.525751743752956
+
+WARN: beta-E1x HOMO -0.525751743752956 > system LUMO -0.525751743752956
+
+
+WARN: beta-E1y LUMO -0.525751743752956 < system HOMO -0.525751743752956
+
+cycle= 30 E= -174.112757189455  delta_E= -0.000624  |g|= 0.111  |ddm|= 0.0251
+alpha HOMO (E1x) = -0.581876508393446  LUMO (A1) = 0.611751918507578
+beta  HOMO (E1x) = -0.520668088335227  LUMO (E1x) = -0.520668088335227
+
+WARN: beta-E1x HOMO -0.520668088335227 > system LUMO -0.520668088335227
+
+
+WARN: beta-E1y LUMO -0.520668088335227 < system HOMO -0.520668088335227
+
+cycle= 31 E= -174.112760366305  delta_E= -3.18e-06  |g|= 0.114  |ddm|= 0.0378
+alpha HOMO (E1x) = -0.581532701975289  LUMO (A1) = 0.612821349437471
+beta  HOMO (E1x) = -0.520027042452764  LUMO (E1x) = -0.520027042452764
+
+WARN: beta-E1x HOMO -0.520027042452764 > system LUMO -0.520027042452764
+
+
+WARN: beta-E1y LUMO -0.520027042452764 < system HOMO -0.520027042452764
+
+cycle= 32 E= -174.112188187107  delta_E= 0.000572  |g|= 0.116  |ddm|= 0.0155
+alpha HOMO (E1x) = -0.581893048315063  LUMO (A1) = 0.611763329159066
+beta  HOMO (E1x) = -0.520245288792518  LUMO (E1x) = -0.520245288792518
+
+WARN: beta-E1x HOMO -0.520245288792518 > system LUMO -0.520245288792518
+
+
+WARN: beta-E1y LUMO -0.520245288792518 < system HOMO -0.520245288792518
+
+cycle= 33 E= -174.112279954488  delta_E= -9.18e-05  |g|= 0.115  |ddm|= 0.00475
+alpha HOMO (E1x) = -0.581571648431962  LUMO (A1) = 0.610526593616163
+beta  HOMO (E1x) = -0.521491672036409  LUMO (E1x) = -0.521491672036409
+
+WARN: beta-E1x HOMO -0.521491672036409 > system LUMO -0.521491672036409
+
+
+WARN: beta-E1y LUMO -0.521491672036409 < system HOMO -0.521491672036409
+
+cycle= 34 E= -174.11225807927  delta_E= 2.19e-05  |g|= 0.114  |ddm|= 0.0418
+alpha HOMO (E1x) = -0.581542893739667  LUMO (A1) = 0.610598245515568
+beta  HOMO (E1x) = -0.522203298611609  LUMO (E1x) = -0.522203298611609
+
+WARN: beta-E1x HOMO -0.522203298611609 > system LUMO -0.522203298611609
+
+
+WARN: beta-E1y LUMO -0.522203298611609 < system HOMO -0.522203298611609
+
+cycle= 35 E= -174.11058204867  delta_E= 0.00168  |g|= 0.115  |ddm|= 0.114
+alpha HOMO (E1x) = -0.582920265523824  LUMO (A1) = 0.614707012836305
+beta  HOMO (E1x) = -0.526840896110855  LUMO (E1x) = -0.526840896110855
+
+WARN: beta-E1x HOMO -0.526840896110855 > system LUMO -0.526840896110855
+
+
+WARN: beta-E1y LUMO -0.526840896110855 < system HOMO -0.526840896110855
+
+cycle= 36 E= -174.109810927255  delta_E= 0.000771  |g|= 0.115  |ddm|= 0.0468
+alpha HOMO (E1x) = -0.586046461878664  LUMO (A1) = 0.6200203025254
+beta  HOMO (E1x) = -0.525708195120942  LUMO (E1x) = -0.525708195120942
+
+WARN: beta-E1x HOMO -0.525708195120942 > system LUMO -0.525708195120942
+
+
+WARN: beta-E1y LUMO -0.525708195120942 < system HOMO -0.525708195120942
+
+cycle= 37 E= -174.111183289489  delta_E= -0.00137  |g|= 0.122  |ddm|= 0.15
+alpha HOMO (E1x) = -0.586549420392117  LUMO (A1) = 0.621277144632501
+beta  HOMO (E1x) = -0.525373463030459  LUMO (E1x) = -0.525373463030459
+
+WARN: beta-E1x HOMO -0.525373463030459 > system LUMO -0.525373463030459
+
+
+WARN: beta-E1y LUMO -0.525373463030459 < system HOMO -0.525373463030459
+
+cycle= 38 E= -174.110397555569  delta_E= 0.000786  |g|= 0.126  |ddm|= 0.0272
+alpha HOMO (E1x) = -0.590395447394893  LUMO (A1) = 0.610826049438661
+beta  HOMO (E1x) = -0.531108418784569  LUMO (E1x) = -0.531108418784569
+
+WARN: beta-E1x HOMO -0.531108418784569 > system LUMO -0.531108418784569
+
+
+WARN: beta-E1y LUMO -0.531108418784569 < system HOMO -0.531108418784569
+
+cycle= 39 E= -174.108810778732  delta_E= 0.00159  |g|= 0.127  |ddm|= 0.0796
+alpha HOMO (E1x) = -0.590652636936937  LUMO (A1) = 0.608614205540893
+beta  HOMO (E1x) = -0.534234360961337  LUMO (E1x) = -0.534234360961337
+
+WARN: beta-E1x HOMO -0.534234360961337 > system LUMO -0.534234360961337
+
+
+WARN: beta-E1y LUMO -0.534234360961337 < system HOMO -0.534234360961337
+
+cycle= 40 E= -174.109035646287  delta_E= -0.000225  |g|= 0.122  |ddm|= 0.0396
+alpha HOMO (E1x) = -0.587690513728384  LUMO (A1) = 0.613437880315654
+beta  HOMO (E1x) = -0.5307451956812  LUMO (E1x) = -0.5307451956812
+
+WARN: beta-E1x HOMO -0.5307451956812 > system LUMO -0.5307451956812
+
+
+WARN: beta-E1y LUMO -0.5307451956812 < system HOMO -0.5307451956812
+
+cycle= 41 E= -174.108550262784  delta_E= 0.000485  |g|= 0.137  |ddm|= 0.0778
+alpha HOMO (E1x) = -0.585227836360309  LUMO (A1) = 0.608785796175446
+beta  HOMO (E1x) = -0.533218583926403  LUMO (E1x) = -0.533218583926403
+
+WARN: beta-E1x HOMO -0.533218583926403 > system LUMO -0.533218583926403
+
+
+WARN: beta-E1y LUMO -0.533218583926403 < system HOMO -0.533218583926403
+
+cycle= 42 E= -174.10807212147  delta_E= 0.000478  |g|= 0.131  |ddm|= 0.0503
+alpha HOMO (E1x) = -0.587455677391393  LUMO (A1) = 0.614094449648074
+beta  HOMO (E1x) = -0.525692128200242  LUMO (E1x) = -0.525692128200242
+
+WARN: beta-E1x HOMO -0.525692128200242 > system LUMO -0.525692128200242
+
+
+WARN: beta-E1y LUMO -0.525692128200242 < system HOMO -0.525692128200242
+
+cycle= 43 E= -174.10847348561  delta_E= -0.000401  |g|= 0.136  |ddm|= 0.0306
+alpha HOMO (E1x) = -0.579712626084872  LUMO (A1) = 0.602566790083637
+beta  HOMO (E1x) = -0.526746650431388  LUMO (E1x) = -0.526746650431388
+
+WARN: beta-E1x HOMO -0.526746650431388 > system LUMO -0.526746650431388
+
+
+WARN: beta-E1y LUMO -0.526746650431388 < system HOMO -0.526746650431388
+
+cycle= 44 E= -174.110212575954  delta_E= -0.00174  |g|= 0.126  |ddm|= 0.0972
+alpha HOMO (E1x) = -0.579140804454708  LUMO (A1) = 0.607187610062214
+beta  HOMO (E1x) = -0.526310656264929  LUMO (E1x) = -0.526310656264929
+
+WARN: beta-E1x HOMO -0.526310656264929 > system LUMO -0.526310656264929
+
+
+WARN: beta-E1y LUMO -0.526310656264929 < system HOMO -0.526310656264929
+
+cycle= 45 E= -174.110507933919  delta_E= -0.000295  |g|= 0.124  |ddm|= 0.0155
+alpha HOMO (E1x) = -0.578769674210154  LUMO (A1) = 0.610626352975982
+beta  HOMO (E1x) = -0.522197323411937  LUMO (E1x) = -0.522197323411937
+
+WARN: beta-E1x HOMO -0.522197323411937 > system LUMO -0.522197323411937
+
+
+WARN: beta-E1y LUMO -0.522197323411937 < system HOMO -0.522197323411937
+
+cycle= 46 E= -174.110550528365  delta_E= -4.26e-05  |g|= 0.131  |ddm|= 0.0979
+alpha HOMO (E1x) = -0.580112326770979  LUMO (A1) = 0.598121772856204
+beta  HOMO (E1x) = -0.52238527040593  LUMO (E1x) = -0.52238527040593
+
+WARN: beta-E1x HOMO -0.52238527040593 > system LUMO -0.52238527040593
+
+
+WARN: beta-E1y LUMO -0.52238527040593 < system HOMO -0.52238527040593
+
+cycle= 47 E= -174.111414046939  delta_E= -0.000864  |g|= 0.119  |ddm|= 0.0806
+alpha HOMO (E1x) = -0.581337786646131  LUMO (A1) = 0.602437583867529
+beta  HOMO (E1x) = -0.521730991996038  LUMO (E1x) = -0.521730991996038
+
+WARN: beta-E1x HOMO -0.521730991996038 > system LUMO -0.521730991996038
+
+
+WARN: beta-E1y LUMO -0.521730991996038 < system HOMO -0.521730991996038
+
+cycle= 48 E= -174.112606033257  delta_E= -0.00119  |g|= 0.111  |ddm|= 0.0327
+alpha HOMO (E1x) = -0.584584829190517  LUMO (A1) = 0.605295103077049
+beta  HOMO (E1x) = -0.52123762560118  LUMO (E1x) = -0.52123762560118
+
+WARN: beta-E1x HOMO -0.52123762560118 > system LUMO -0.52123762560118
+
+
+WARN: beta-E1y LUMO -0.52123762560118 < system HOMO -0.52123762560118
+
+cycle= 49 E= -174.111899332195  delta_E= 0.000707  |g|= 0.118  |ddm|= 0.0358
+alpha HOMO (E1x) = -0.581887573610671  LUMO (A1) = 0.610151359778646
+beta  HOMO (E1x) = -0.521615458217297  LUMO (E1x) = -0.521615458217297
+
+WARN: beta-E1x HOMO -0.521615458217297 > system LUMO -0.521615458217297
+
+
+WARN: beta-E1y LUMO -0.521615458217297 < system HOMO -0.521615458217297
+
+cycle= 50 E= -174.111194102027  delta_E= 0.000705  |g|= 0.123  |ddm|= 0.13
+alpha HOMO (E1x) = -0.581995533058237  LUMO (A1) = 0.60902251543268
+beta  HOMO (E1x) = -0.525584071677709  LUMO (E1x) = -0.525584071677709
+
+WARN: beta-E1x HOMO -0.525584071677709 > system LUMO -0.525584071677709
+
+
+WARN: beta-E1y LUMO -0.525584071677709 < system HOMO -0.525584071677709
+
+cycle= 51 E= -174.108691867201  delta_E= 0.0025  |g|= 0.133  |ddm|= 0.0352
+alpha HOMO (E1x) = -0.583257513752963  LUMO (A1) = 0.613300331409841
+beta  HOMO (E1x) = -0.522348729250933  LUMO (E1x) = -0.522348729250933
+
+WARN: beta-E1x HOMO -0.522348729250933 > system LUMO -0.522348729250933
+
+
+WARN: beta-E1y LUMO -0.522348729250933 < system HOMO -0.522348729250933
+
+cycle= 52 E= -174.109442767444  delta_E= -0.000751  |g|= 0.137  |ddm|= 0.0421
+alpha HOMO (E1x) = -0.581789354412854  LUMO (A1) = 0.600531660020157
+beta  HOMO (E1x) = -0.521854163795188  LUMO (E1x) = -0.521854163795188
+
+WARN: beta-E1x HOMO -0.521854163795188 > system LUMO -0.521854163795188
+
+
+WARN: beta-E1y LUMO -0.521854163795188 < system HOMO -0.521854163795188
+
+cycle= 53 E= -174.11014820899  delta_E= -0.000705  |g|= 0.137  |ddm|= 0.0421
+alpha HOMO (E1x) = -0.579136157519161  LUMO (A1) = 0.600878690830941
+beta  HOMO (E1x) = -0.523907912483071  LUMO (E1x) = -0.523907912483071
+
+WARN: beta-E1x HOMO -0.523907912483071 > system LUMO -0.523907912483071
+
+
+WARN: beta-E1y LUMO -0.523907912483071 < system HOMO -0.523907912483071
+
+cycle= 54 E= -174.10936965612  delta_E= 0.000779  |g|= 0.131  |ddm|= 0.113
+alpha HOMO (E1x) = -0.579885905846763  LUMO (A1) = 0.602717835646701
+beta  HOMO (E1x) = -0.520571377027253  LUMO (E1x) = -0.520571377027253
+
+WARN: beta-E1x HOMO -0.520571377027253 > system LUMO -0.520571377027253
+
+
+WARN: beta-E1y LUMO -0.520571377027253 < system HOMO -0.520571377027253
+
+cycle= 55 E= -174.110391592161  delta_E= -0.00102  |g|= 0.129  |ddm|= 0.0155
+alpha HOMO (E1x) = -0.581007279781896  LUMO (A1) = 0.601848478688501
+beta  HOMO (E1x) = -0.521628391772885  LUMO (E1x) = -0.521628391772885
+
+WARN: beta-E1x HOMO -0.521628391772885 > system LUMO -0.521628391772885
+
+
+WARN: beta-E1y LUMO -0.521628391772885 < system HOMO -0.521628391772885
+
+cycle= 56 E= -174.109917687169  delta_E= 0.000474  |g|= 0.13  |ddm|= 0.0116
+alpha HOMO (E1x) = -0.586449241010944  LUMO (A1) = 0.611140745956968
+beta  HOMO (E1x) = -0.527576333785872  LUMO (E1x) = -0.527576333785872
+
+WARN: beta-E1x HOMO -0.527576333785872 > system LUMO -0.527576333785872
+
+
+WARN: beta-E1y LUMO -0.527576333785872 < system HOMO -0.527576333785872
+
+cycle= 57 E= -174.109066707808  delta_E= 0.000851  |g|= 0.127  |ddm|= 0.0646
+alpha HOMO (E1x) = -0.580852612555168  LUMO (A1) = 0.609910427374348
+beta  HOMO (E1x) = -0.529563047061896  LUMO (E1x) = -0.529563047061896
+
+WARN: beta-E1x HOMO -0.529563047061896 > system LUMO -0.529563047061896
+
+
+WARN: beta-E1y LUMO -0.529563047061896 < system HOMO -0.529563047061896
+
+cycle= 58 E= -174.11161785899  delta_E= -0.00255  |g|= 0.112  |ddm|= 0.0257
+alpha HOMO (E1x) = -0.577770170800943  LUMO (A1) = 0.607664558744366
+beta  HOMO (E1x) = -0.528926243417095  LUMO (E1x) = -0.528926243417095
+
+WARN: beta-E1x HOMO -0.528926243417095 > system LUMO -0.528926243417095
+
+
+WARN: beta-E1y LUMO -0.528926243417095 < system HOMO -0.528926243417095
+
+cycle= 59 E= -174.111318438864  delta_E= 0.000299  |g|= 0.116  |ddm|= 0.0274
+alpha HOMO (E1x) = -0.582758294205342  LUMO (A1) = 0.606004669748947
+beta  HOMO (E1x) = -0.522612459813065  LUMO (E1x) = -0.522612459813065
+
+WARN: beta-E1x HOMO -0.522612459813065 > system LUMO -0.522612459813065
+
+
+WARN: beta-E1y LUMO -0.522612459813065 < system HOMO -0.522612459813065
+
+cycle= 60 E= -174.111367757923  delta_E= -4.93e-05  |g|= 0.118  |ddm|= 0.101
+alpha HOMO (E1x) = -0.584372542546203  LUMO (A1) = 0.59999373848348
+beta  HOMO (E1x) = -0.523619567395211  LUMO (E1x) = -0.523619567395211
+
+WARN: beta-E1x HOMO -0.523619567395211 > system LUMO -0.523619567395211
+
+
+WARN: beta-E1y LUMO -0.523619567395211 < system HOMO -0.523619567395211
+
+cycle= 61 E= -174.110248020502  delta_E= 0.00112  |g|= 0.131  |ddm|= 0.0397
+alpha HOMO (E1x) = -0.586350738046443  LUMO (A1) = 0.603219833859571
+beta  HOMO (E1x) = -0.527042186624959  LUMO (E1x) = -0.527042186624959
+
+WARN: beta-E1x HOMO -0.527042186624959 > system LUMO -0.527042186624959
+
+
+WARN: beta-E1y LUMO -0.527042186624959 < system HOMO -0.527042186624959
+
+cycle= 62 E= -174.108220006772  delta_E= 0.00203  |g|= 0.136  |ddm|= 0.0596
+alpha HOMO (E1x) = -0.585541821062532  LUMO (A1) = 0.611139396580252
+beta  HOMO (E1x) = -0.523532380626862  LUMO (E1x) = -0.523532380626862
+
+WARN: beta-E1x HOMO -0.523532380626862 > system LUMO -0.523532380626862
+
+
+WARN: beta-E1y LUMO -0.523532380626862 < system HOMO -0.523532380626862
+
+cycle= 63 E= -174.109862984125  delta_E= -0.00164  |g|= 0.135  |ddm|= 0.144
+alpha HOMO (E1x) = -0.584249253659447  LUMO (A1) = 0.615664207919543
+beta  HOMO (E1x) = -0.521877638922891  LUMO (E1x) = -0.521877638922891
+
+WARN: beta-E1x HOMO -0.521877638922891 > system LUMO -0.521877638922891
+
+
+WARN: beta-E1y LUMO -0.521877638922891 < system HOMO -0.521877638922891
+
+cycle= 64 E= -174.108806687887  delta_E= 0.00106  |g|= 0.14  |ddm|= 0.0497
+alpha HOMO (E1x) = -0.584744968866616  LUMO (A1) = 0.622000233320099
+beta  HOMO (E1x) = -0.523310312577193  LUMO (E1x) = -0.523310312577193
+
+WARN: beta-E1x HOMO -0.523310312577193 > system LUMO -0.523310312577193
+
+
+WARN: beta-E1y LUMO -0.523310312577193 < system HOMO -0.523310312577193
+
+cycle= 65 E= -174.107851586393  delta_E= 0.000955  |g|= 0.145  |ddm|= 0.0126
+alpha HOMO (E1x) = -0.586756403055055  LUMO (A1) = 0.615484788921379
+beta  HOMO (E1x) = -0.523230899560543  LUMO (E1x) = -0.523230899560543
+
+WARN: beta-E1x HOMO -0.523230899560543 > system LUMO -0.523230899560543
+
+
+WARN: beta-E1y LUMO -0.523230899560543 < system HOMO -0.523230899560543
+
+cycle= 66 E= -174.107347868601  delta_E= 0.000504  |g|= 0.15  |ddm|= 0.0423
+alpha HOMO (E1x) = -0.586517357892031  LUMO (A1) = 0.618181205270459
+beta  HOMO (E1x) = -0.534458910890985  LUMO (E1x) = -0.534458910890985
+
+WARN: beta-E1x HOMO -0.534458910890985 > system LUMO -0.534458910890985
+
+
+WARN: beta-E1y LUMO -0.534458910890985 < system HOMO -0.534458910890985
+
+cycle= 67 E= -174.108565129279  delta_E= -0.00122  |g|= 0.135  |ddm|= 0.0327
+alpha HOMO (E1x) = -0.58629451804542  LUMO (A1) = 0.607513719792149
+beta  HOMO (E1x) = -0.534338958673315  LUMO (E1x) = -0.534338958673315
+
+WARN: beta-E1x HOMO -0.534338958673315 > system LUMO -0.534338958673315
+
+
+WARN: beta-E1y LUMO -0.534338958673315 < system HOMO -0.534338958673315
+
+cycle= 68 E= -174.109679231242  delta_E= -0.00111  |g|= 0.128  |ddm|= 0.0378
+alpha HOMO (E1x) = -0.585051834172123  LUMO (A1) = 0.60643325530659
+beta  HOMO (E1x) = -0.534373281195455  LUMO (E1x) = -0.534373281195455
+
+WARN: beta-E1x HOMO -0.534373281195455 > system LUMO -0.534373281195455
+
+
+WARN: beta-E1y LUMO -0.534373281195455 < system HOMO -0.534373281195455
+
+cycle= 69 E= -174.109700495874  delta_E= -2.13e-05  |g|= 0.128  |ddm|= 0.0228
+alpha HOMO (E1x) = -0.586599587666413  LUMO (A1) = 0.611856895687838
+beta  HOMO (E1x) = -0.52430382461977  LUMO (E1x) = -0.52430382461977
+
+WARN: beta-E1x HOMO -0.52430382461977 > system LUMO -0.52430382461977
+
+
+WARN: beta-E1y LUMO -0.52430382461977 < system HOMO -0.52430382461977
+
+cycle= 70 E= -174.109939804297  delta_E= -0.000239  |g|= 0.127  |ddm|= 0.0434
+alpha HOMO (E1x) = -0.585584021760309  LUMO (A1) = 0.610453074078889
+beta  HOMO (E1x) = -0.523412476241867  LUMO (E1x) = -0.523412476241867
+
+WARN: beta-E1x HOMO -0.523412476241867 > system LUMO -0.523412476241867
+
+
+WARN: beta-E1y LUMO -0.523412476241867 < system HOMO -0.523412476241867
+
+cycle= 71 E= -174.110464734375  delta_E= -0.000525  |g|= 0.131  |ddm|= 0.0288
+alpha HOMO (E1x) = -0.584101154016976  LUMO (A1) = 0.607933662738016
+beta  HOMO (E1x) = -0.524643621298774  LUMO (E1x) = -0.524643621298774
+
+WARN: beta-E1x HOMO -0.524643621298774 > system LUMO -0.524643621298774
+
+
+WARN: beta-E1y LUMO -0.524643621298774 < system HOMO -0.524643621298774
+
+cycle= 72 E= -174.110741908502  delta_E= -0.000277  |g|= 0.125  |ddm|= 0.0378
+alpha HOMO (E1x) = -0.586069716748903  LUMO (A1) = 0.604779754094495
+beta  HOMO (E1x) = -0.527560455599079  LUMO (E1x) = -0.527560455599079
+
+WARN: beta-E1x HOMO -0.527560455599079 > system LUMO -0.527560455599079
+
+
+WARN: beta-E1y LUMO -0.527560455599079 < system HOMO -0.527560455599079
+
+cycle= 73 E= -174.109253081196  delta_E= 0.00149  |g|= 0.13  |ddm|= 0.0956
+alpha HOMO (E1x) = -0.586483455402218  LUMO (A1) = 0.609292929268802
+beta  HOMO (E1x) = -0.526018465364438  LUMO (E1x) = -0.526018465364438
+
+WARN: beta-E1x HOMO -0.526018465364438 > system LUMO -0.526018465364438
+
+
+WARN: beta-E1y LUMO -0.526018465364438 < system HOMO -0.526018465364438
+
+cycle= 74 E= -174.10883659275  delta_E= 0.000416  |g|= 0.136  |ddm|= 0.029
+alpha HOMO (E1x) = -0.585280618664288  LUMO (A1) = 0.612996775579271
+beta  HOMO (E1x) = -0.524906827993874  LUMO (E1x) = -0.524906827993874
+
+WARN: beta-E1x HOMO -0.524906827993874 > system LUMO -0.524906827993874
+
+
+WARN: beta-E1y LUMO -0.524906827993874 < system HOMO -0.524906827993874
+
+cycle= 75 E= -174.108839493993  delta_E= -2.9e-06  |g|= 0.139  |ddm|= 0.0399
+alpha HOMO (E1x) = -0.581734996583686  LUMO (A1) = 0.606760584746665
+beta  HOMO (E1x) = -0.524288664661284  LUMO (E1x) = -0.524288664661284
+
+WARN: beta-E1x HOMO -0.524288664661284 > system LUMO -0.524288664661284
+
+
+WARN: beta-E1y LUMO -0.524288664661284 < system HOMO -0.524288664661284
+
+cycle= 76 E= -174.111616254932  delta_E= -0.00278  |g|= 0.121  |ddm|= 0.0483
+alpha HOMO (E1x) = -0.588226371261204  LUMO (A1) = 0.614213424488837
+beta  HOMO (E1x) = -0.527038453173663  LUMO (E1x) = -0.527038453173663
+
+WARN: beta-E1x HOMO -0.527038453173663 > system LUMO -0.527038453173663
+
+
+WARN: beta-E1y LUMO -0.527038453173663 < system HOMO -0.527038453173663
+
+cycle= 77 E= -174.10825432422  delta_E= 0.00336  |g|= 0.144  |ddm|= 0.0309
+alpha HOMO (E1x) = -0.586185624734828  LUMO (A1) = 0.613276426863612
+beta  HOMO (E1x) = -0.530355995580981  LUMO (E1x) = -0.530355995580981
+
+WARN: beta-E1x HOMO -0.530355995580981 > system LUMO -0.530355995580981
+
+
+WARN: beta-E1y LUMO -0.530355995580981 < system HOMO -0.530355995580981
+
+cycle= 78 E= -174.106577778734  delta_E= 0.00168  |g|= 0.154  |ddm|= 0.0349
+alpha HOMO (E1x) = -0.586267594890322  LUMO (A1) = 0.613988955636025
+beta  HOMO (E1x) = -0.529413351369726  LUMO (E1x) = -0.529413351369726
+
+WARN: beta-E1x HOMO -0.529413351369726 > system LUMO -0.529413351369726
+
+
+WARN: beta-E1y LUMO -0.529413351369726 < system HOMO -0.529413351369726
+
+cycle= 79 E= -174.106182146815  delta_E= 0.000396  |g|= 0.152  |ddm|= 0.0296
+alpha HOMO (E1x) = -0.581728373775063  LUMO (A1) = 0.613126783443492
+beta  HOMO (E1x) = -0.519096415352973  LUMO (E1x) = -0.519096415352973
+
+WARN: beta-E1x HOMO -0.519096415352973 > system LUMO -0.519096415352973
+
+
+WARN: beta-E1y LUMO -0.519096415352973 < system HOMO -0.519096415352973
+
+cycle= 80 E= -174.111466665374  delta_E= -0.00528  |g|= 0.122  |ddm|= 0.0777
+alpha HOMO (E1x) = -0.580242433734484  LUMO (A1) = 0.618327241017111
+beta  HOMO (E1x) = -0.522500875025987  LUMO (E1x) = -0.522500875025987
+
+WARN: beta-E1x HOMO -0.522500875025987 > system LUMO -0.522500875025987
+
+
+WARN: beta-E1y LUMO -0.522500875025987 < system HOMO -0.522500875025987
+
+cycle= 81 E= -174.110282998682  delta_E= 0.00118  |g|= 0.121  |ddm|= 0.0705
+alpha HOMO (E1x) = -0.587808138962183  LUMO (A1) = 0.614235585914815
+beta  HOMO (E1x) = -0.526919843326178  LUMO (E1x) = -0.526919843326178
+
+WARN: beta-E1x HOMO -0.526919843326178 > system LUMO -0.526919843326178
+
+
+WARN: beta-E1y LUMO -0.526919843326178 < system HOMO -0.526919843326178
+
+cycle= 82 E= -174.10811146768  delta_E= 0.00217  |g|= 0.14  |ddm|= 0.0566
+alpha HOMO (E1x) = -0.588084393369306  LUMO (A1) = 0.615235382378281
+beta  HOMO (E1x) = -0.527644123344384  LUMO (E1x) = -0.527644123344384
+
+WARN: beta-E1x HOMO -0.527644123344384 > system LUMO -0.527644123344384
+
+
+WARN: beta-E1y LUMO -0.527644123344384 < system HOMO -0.527644123344384
+
+cycle= 83 E= -174.108234570146  delta_E= -0.000123  |g|= 0.144  |ddm|= 0.0222
+alpha HOMO (E1x) = -0.589238268557476  LUMO (A1) = 0.610934900701972
+beta  HOMO (E1x) = -0.527158163173959  LUMO (E1x) = -0.527158163173959
+
+WARN: beta-E1x HOMO -0.527158163173959 > system LUMO -0.527158163173959
+
+
+WARN: beta-E1y LUMO -0.527158163173959 < system HOMO -0.527158163173959
+
+cycle= 84 E= -174.108575505835  delta_E= -0.000341  |g|= 0.143  |ddm|= 0.0343
+alpha HOMO (E1x) = -0.588530220649757  LUMO (A1) = 0.612945795246654
+beta  HOMO (E1x) = -0.527984374464439  LUMO (E1x) = -0.527984374464439
+
+WARN: beta-E1x HOMO -0.527984374464439 > system LUMO -0.527984374464439
+
+
+WARN: beta-E1y LUMO -0.527984374464439 < system HOMO -0.527984374464439
+
+cycle= 85 E= -174.108384995294  delta_E= 0.000191  |g|= 0.143  |ddm|= 0.0155
+alpha HOMO (E1x) = -0.588342256500759  LUMO (A1) = 0.614763331680555
+beta  HOMO (E1x) = -0.526119868565317  LUMO (E1x) = -0.526119868565317
+
+WARN: beta-E1x HOMO -0.526119868565317 > system LUMO -0.526119868565317
+
+
+WARN: beta-E1y LUMO -0.526119868565317 < system HOMO -0.526119868565317
+
+cycle= 86 E= -174.108111126488  delta_E= 0.000274  |g|= 0.148  |ddm|= 0.0166
+alpha HOMO (E1x) = -0.587578927952503  LUMO (A1) = 0.614740133705292
+beta  HOMO (E1x) = -0.525479996345916  LUMO (E1x) = -0.525479996345916
+
+WARN: beta-E1x HOMO -0.525479996345916 > system LUMO -0.525479996345916
+
+
+WARN: beta-E1y LUMO -0.525479996345916 < system HOMO -0.525479996345916
+
+cycle= 87 E= -174.107496781217  delta_E= 0.000614  |g|= 0.15  |ddm|= 0.0105
+alpha HOMO (E1x) = -0.586771730902134  LUMO (A1) = 0.611765798244175
+beta  HOMO (E1x) = -0.52910480361855  LUMO (E1x) = -0.52910480361855
+
+WARN: beta-E1x HOMO -0.52910480361855 > system LUMO -0.52910480361855
+
+
+WARN: beta-E1y LUMO -0.52910480361855 < system HOMO -0.52910480361855
+
+cycle= 88 E= -174.105899296025  delta_E= 0.0016  |g|= 0.156  |ddm|= 0.0473
+alpha HOMO (E1x) = -0.576738412147927  LUMO (A1) = 0.624937660055285
+beta  HOMO (E1x) = -0.517241728894938  LUMO (E1x) = -0.517241728894938
+
+WARN: beta-E1x HOMO -0.517241728894938 > system LUMO -0.517241728894938
+
+
+WARN: beta-E1y LUMO -0.517241728894938 < system HOMO -0.517241728894938
+
+cycle= 89 E= -174.112681161023  delta_E= -0.00678  |g|= 0.119  |ddm|= 0.148
+alpha HOMO (E1x) = -0.576167687790645  LUMO (A1) = 0.627450155251931
+beta  HOMO (E1x) = -0.518709012355292  LUMO (E1x) = -0.518709012355292
+
+WARN: beta-E1x HOMO -0.518709012355292 > system LUMO -0.518709012355292
+
+
+WARN: beta-E1y LUMO -0.518709012355292 < system HOMO -0.518709012355292
+
+cycle= 90 E= -174.111359478843  delta_E= 0.00132  |g|= 0.12  |ddm|= 0.0509
+alpha HOMO (E1x) = -0.582556340616186  LUMO (A1) = 0.630005406437817
+beta  HOMO (E1x) = -0.522109183369323  LUMO (E1x) = -0.522109183369323
+
+WARN: beta-E1x HOMO -0.522109183369323 > system LUMO -0.522109183369323
+
+
+WARN: beta-E1y LUMO -0.522109183369323 < system HOMO -0.522109183369323
+
+cycle= 91 E= -174.10715925506  delta_E= 0.0042  |g|= 0.136  |ddm|= 0.0466
+alpha HOMO (E1x) = -0.584000963723616  LUMO (A1) = 0.612000219715805
+beta  HOMO (E1x) = -0.524654982204755  LUMO (E1x) = -0.524654982204755
+
+WARN: beta-E1x HOMO -0.524654982204755 > system LUMO -0.524654982204755
+
+
+WARN: beta-E1y LUMO -0.524654982204755 < system HOMO -0.524654982204755
+
+cycle= 92 E= -174.110700727372  delta_E= -0.00354  |g|= 0.131  |ddm|= 0.111
+alpha HOMO (E1x) = -0.584658374214202  LUMO (A1) = 0.619744272683066
+beta  HOMO (E1x) = -0.52511149355497  LUMO (E1x) = -0.52511149355497
+
+WARN: beta-E1x HOMO -0.52511149355497 > system LUMO -0.52511149355497
+
+
+WARN: beta-E1y LUMO -0.52511149355497 < system HOMO -0.52511149355497
+
+cycle= 93 E= -174.109536898357  delta_E= 0.00116  |g|= 0.138  |ddm|= 0.0387
+alpha HOMO (E1x) = -0.587523158158872  LUMO (A1) = 0.621104694365864
+beta  HOMO (E1x) = -0.52716011185355  LUMO (E1x) = -0.52716011185355
+
+WARN: beta-E1x HOMO -0.52716011185355 > system LUMO -0.52716011185355
+
+
+WARN: beta-E1y LUMO -0.52716011185355 < system HOMO -0.52716011185355
+
+cycle= 94 E= -174.106777699976  delta_E= 0.00276  |g|= 0.151  |ddm|= 0.0244
+alpha HOMO (E1x) = -0.584691408431106  LUMO (A1) = 0.623190357970286
+beta  HOMO (E1x) = -0.524456934395925  LUMO (E1x) = -0.524456934395925
+
+WARN: beta-E1x HOMO -0.524456934395925 > system LUMO -0.524456934395925
+
+
+WARN: beta-E1y LUMO -0.524456934395925 < system HOMO -0.524456934395925
+
+cycle= 95 E= -174.107342874773  delta_E= -0.000565  |g|= 0.151  |ddm|= 0.0238
+alpha HOMO (E1x) = -0.584280555998366  LUMO (A1) = 0.619042801579368
+beta  HOMO (E1x) = -0.529638872902307  LUMO (E1x) = -0.529638872902307
+
+WARN: beta-E1x HOMO -0.529638872902307 > system LUMO -0.529638872902307
+
+
+WARN: beta-E1y LUMO -0.529638872902307 < system HOMO -0.529638872902307
+
+cycle= 96 E= -174.106311848889  delta_E= 0.00103  |g|= 0.153  |ddm|= 0.0254
+alpha HOMO (E1x) = -0.587465019911775  LUMO (A1) = 0.620105582068924
+beta  HOMO (E1x) = -0.526396728184353  LUMO (E1x) = -0.526396728184353
+
+WARN: beta-E1x HOMO -0.526396728184353 > system LUMO -0.526396728184353
+
+
+WARN: beta-E1y LUMO -0.526396728184353 < system HOMO -0.526396728184353
+
+cycle= 97 E= -174.106376467061  delta_E= -6.46e-05  |g|= 0.155  |ddm|= 0.0194
+alpha HOMO (E1x) = -0.585148807937712  LUMO (A1) = 0.623977179626467
+beta  HOMO (E1x) = -0.51953667349868  LUMO (E1x) = -0.51953667349868
+
+WARN: beta-E1x HOMO -0.51953667349868 > system LUMO -0.51953667349868
+
+
+WARN: beta-E1y LUMO -0.51953667349868 < system HOMO -0.51953667349868
+
+cycle= 98 E= -174.110470714917  delta_E= -0.00409  |g|= 0.136  |ddm|= 0.0977
+alpha HOMO (E1x) = -0.585874741222776  LUMO (A1) = 0.621674438549755
+beta  HOMO (E1x) = -0.523100699190128  LUMO (E1x) = -0.523100699190128
+
+WARN: beta-E1x HOMO -0.523100699190128 > system LUMO -0.523100699190128
+
+
+WARN: beta-E1y LUMO -0.523100699190128 < system HOMO -0.523100699190128
+
+cycle= 99 E= -174.109080471832  delta_E= 0.00139  |g|= 0.14  |ddm|= 0.0134
+alpha HOMO (E1x) = -0.58790238203864  LUMO (A1) = 0.615292904118484
+beta  HOMO (E1x) = -0.526732067279983  LUMO (E1x) = -0.526732067279983
+
+WARN: beta-E1x HOMO -0.526732067279983 > system LUMO -0.526732067279983
+
+
+WARN: beta-E1y LUMO -0.526732067279983 < system HOMO -0.526732067279983
+
+cycle= 100 E= -174.105925581791  delta_E= 0.00315  |g|= 0.152  |ddm|= 0.0645
+SCF not converged.
+SCF energy = -174.105925581791 after 100 cycles  <S^2> = 0.81852387  2S+1 = 2.0673886
+mf stability test 1
+uhf_internal: lowest eigs of H = [0.18759316 0.38142741 1.35401386]
+<class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> wavefunction is stable in the internal stability analysis
+Freeze 0 electrons in irreps []
+    17 free electrons in irreps A1 E1x E1y E2x E2y
+
+
+
+
+******** <class 'pyscf.soscf.newton_ah.SecondOrderSymAdaptedUHF'> ********
+method = SecondOrderSymAdaptedUHF
+initial guess = chk
+damping factor = 0
+level_shift factor = 0.4
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./umf.chk
+max_memory 4000 MB (current use 434 MB)
+number electrons alpha = 9  beta = 8
+******** <class 'pyscf.scf.uhf_symm.SymAdaptedUHF'> Newton solver flags ********
+SCF tol = 1e-09
+conv_tol_grad = None
+max. SCF cycles = 100
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = ./umf.chk
+max_cycle_inner = 12
+max_stepsize = 0.05
+ah_start_tol = 1e+09
+ah_level_shift = 0
+ah_conv_tol = 1e-12
+ah_lindep = 1e-14
+ah_start_cycle = 1
+ah_max_cycle = 40
+ah_grad_trust_region = 2.5
+kf_interval = 4
+kf_trust_region = 5
+canonicalization = True
+max_memory 4000 MB (current use 434 MB)
+Set conv_tol_grad to 3.16228e-05
+alpha HOMO (E1x) = -0.561640358652855  LUMO (A1) = 0.211230824784786
+beta  HOMO (E1x) = -0.504261096135508  LUMO (E1x) = -0.504261096135508
+
+WARN: beta-E1x HOMO -0.504261096135508 > system LUMO -0.504261096135508
+
+
+WARN: beta-E1y LUMO -0.504261096135508 < system HOMO -0.504261096135508
+
+Initial guess E= -174.117352432619  |g|= 0.156766
+macro= 0  E= -174.127342988799  delta_E= -0.00999056  |g|= 0.156766  2 KF 5 JK
+macro= 1  E= -174.12938960687  delta_E= -0.00204662  |g|= 0.0855986  2 KF 5 JK
+macro= 2  E= -174.130638638303  delta_E= -0.00124903  |g|= 0.0703101  2 KF 5 JK
+macro= 3  E= -174.131098071614  delta_E= -0.000459433  |g|= 0.0579512  2 KF 5 JK
+macro= 4  E= -174.130769707115  delta_E= 0.000328364  |g|= 0.0510318  2 KF 5 JK
+macro= 5  E= -174.131132649528  delta_E= -0.000362942  |g|= 0.0575029  2 KF 5 JK
+macro= 6  E= -174.130872079834  delta_E= 0.00026057  |g|= 0.0498666  2 KF 5 JK
+macro= 7  E= -174.131130292113  delta_E= -0.000258212  |g|= 0.0552862  2 KF 5 JK
+macro= 8  E= -174.13074644979  delta_E= 0.000383842  |g|= 0.0499753  2 KF 5 JK
+macro= 9  E= -174.131129082503  delta_E= -0.000382633  |g|= 0.0574882  2 KF 5 JK
+macro= 10  E= -174.130703299444  delta_E= 0.000425783  |g|= 0.0504919  2 KF 5 JK
+macro= 11  E= -174.131086053541  delta_E= -0.000382754  |g|= 0.0581628  2 KF 5 JK
+macro= 12  E= -174.130656188277  delta_E= 0.000429865  |g|= 0.0517479  2 KF 5 JK
+macro= 13  E= -174.131005636509  delta_E= -0.000349448  |g|= 0.0589579  2 KF 5 JK
+macro= 14  E= -174.130623193295  delta_E= 0.000382443  |g|= 0.0531786  2 KF 5 JK
+macro= 15  E= -174.130947830186  delta_E= -0.000324637  |g|= 0.0596031  2 KF 5 JK
+macro= 16  E= -174.130616364896  delta_E= 0.000331465  |g|= 0.0537486  2 KF 5 JK
+macro= 17  E= -174.130949913136  delta_E= -0.000333548  |g|= 0.0598848  2 KF 5 JK
+macro= 18  E= -174.130635535709  delta_E= 0.000314377  |g|= 0.0534692  2 KF 5 JK
+macro= 19  E= -174.130983512639  delta_E= -0.000347977  |g|= 0.0596868  2 KF 5 JK
+macro= 20  E= -174.130641955647  delta_E= 0.000341557  |g|= 0.0530211  2 KF 5 JK
+macro= 21  E= -174.130993705028  delta_E= -0.000351749  |g|= 0.0594972  2 KF 5 JK
+macro= 22  E= -174.130634415502  delta_E= 0.00035929  |g|= 0.052967  2 KF 5 JK
+macro= 23  E= -174.130979757371  delta_E= -0.000345342  |g|= 0.0595496  2 KF 5 JK
+macro= 24  E= -174.130629548936  delta_E= 0.000350208  |g|= 0.0531923  2 KF 5 JK
+macro= 25  E= -174.130970290662  delta_E= -0.000340742  |g|= 0.0596593  2 KF 5 JK
+macro= 26  E= -174.130632477096  delta_E= 0.000337814  |g|= 0.0532457  2 KF 5 JK
+macro= 27  E= -174.130975976769  delta_E= -0.0003435  |g|= 0.0596705  2 KF 5 JK
+macro= 28  E= -174.130638286209  delta_E= 0.000337691  |g|= 0.0531002  2 KF 5 JK
+macro= 29  E= -174.13098524499  delta_E= -0.000346959  |g|= 0.0595906  2 KF 5 JK
+macro= 30  E= -174.130639745429  delta_E= 0.0003455  |g|= 0.0529624  2 KF 5 JK
+macro= 31  E= -174.130987067783  delta_E= -0.000347322  |g|= 0.0595453  2 KF 5 JK
+macro= 32  E= -174.130638943519  delta_E= 0.000348124  |g|= 0.0529427  2 KF 5 JK
+macro= 33  E= -174.130984801028  delta_E= -0.000345858  |g|= 0.0595535  2 KF 5 JK
+macro= 34  E= -174.130639501464  delta_E= 0.0003453  |g|= 0.0529548  2 KF 5 JK
+macro= 35  E= -174.130984998773  delta_E= -0.000345497  |g|= 0.0595614  2 KF 5 JK
+macro= 36  E= -174.130641730951  delta_E= 0.000343268  |g|= 0.0529157  2 KF 5 JK
+macro= 37  E= -174.130988078899  delta_E= -0.000346348  |g|= 0.0595404  2 KF 5 JK
+macro= 38  E= -174.130643816175  delta_E= 0.000344263  |g|= 0.0528446  2 KF 5 JK
+macro= 39  E= -174.130990827169  delta_E= -0.000347011  |g|= 0.0595098  2 KF 5 JK
+macro= 40  E= -174.130645072253  delta_E= 0.000345755  |g|= 0.0527888  2 KF 5 JK
+macro= 41  E= -174.130992091106  delta_E= -0.000347019  |g|= 0.0594901  2 KF 5 JK
+macro= 42  E= -174.130646215719  delta_E= 0.000345875  |g|= 0.0527532  2 KF 5 JK
+macro= 43  E= -174.130993084117  delta_E= -0.000346868  |g|= 0.0594771  2 KF 5 JK
+macro= 44  E= -174.130647723732  delta_E= 0.00034536  |g|= 0.0527164  2 KF 5 JK
+macro= 45  E= -174.130994669632  delta_E= -0.000346946  |g|= 0.0594605  2 KF 5 JK
+macro= 46  E= -174.130649406057  delta_E= 0.000345264  |g|= 0.0526703  2 KF 5 JK
+macro= 47  E= -174.130996535454  delta_E= -0.000347129  |g|= 0.0594393  2 KF 5 JK
+macro= 48  E= -174.130651001826  delta_E= 0.000345534  |g|= 0.0526222  2 KF 5 JK
+macro= 49  E= -174.130998219982  delta_E= -0.000347218  |g|= 0.0594179  2 KF 5 JK
+macro= 50  E= -174.13065253327  delta_E= 0.000345687  |g|= 0.0525779  2 KF 5 JK
+macro= 51  E= -174.130999741078  delta_E= -0.000347208  |g|= 0.0593977  2 KF 5 JK
+macro= 52  E= -174.130654111791  delta_E= 0.000345629  |g|= 0.0525355  2 KF 5 JK
+macro= 53  E= -174.131001294349  delta_E= -0.000347183  |g|= 0.0593774  2 KF 5 JK
+macro= 54  E= -174.130655752358  delta_E= 0.000345542  |g|= 0.0524921  2 KF 5 JK
+macro= 55  E= -174.13100291972  delta_E= -0.000347167  |g|= 0.059356  2 KF 5 JK
+macro= 56  E= -174.130657415079  delta_E= 0.000345505  |g|= 0.0524479  2 KF 5 JK
+macro= 57  E= -174.131004550855  delta_E= -0.000347136  |g|= 0.0593339  2 KF 5 JK
+macro= 58  E= -174.130659086557  delta_E= 0.000345464  |g|= 0.052404  2 KF 5 JK
+macro= 59  E= -174.131006158612  delta_E= -0.000347072  |g|= 0.0593115  2 KF 5 JK
+macro= 60  E= -174.130660778824  delta_E= 0.00034538  |g|= 0.0523605  2 KF 5 JK
+macro= 61  E= -174.131007761706  delta_E= -0.000346983  |g|= 0.0592887  2 KF 5 JK
+macro= 62  E= -174.130662498844  delta_E= 0.000345263  |g|= 0.0523171  2 KF 5 JK
+macro= 63  E= -174.131009375111  delta_E= -0.000346876  |g|= 0.0592654  2 KF 5 JK
+macro= 64  E= -174.130664243915  delta_E= 0.000345131  |g|= 0.0522737  2 KF 5 JK
+macro= 65  E= -174.131010996179  delta_E= -0.000346752  |g|= 0.0592416  2 KF 5 JK
+macro= 66  E= -174.130666011549  delta_E= 0.000344985  |g|= 0.0522302  2 KF 5 JK
+macro= 67  E= -174.131012620181  delta_E= -0.000346609  |g|= 0.0592173  2 KF 5 JK
+macro= 68  E= -174.13066780251  delta_E= 0.000344818  |g|= 0.0521867  2 KF 5 JK
+macro= 69  E= -174.131014247854  delta_E= -0.000346445  |g|= 0.0591926  2 KF 5 JK
+macro= 70  E= -174.130669618022  delta_E= 0.00034463  |g|= 0.0521433  2 KF 5 JK
+macro= 71  E= -174.131015881607  delta_E= -0.000346264  |g|= 0.0591674  2 KF 5 JK
+macro= 72  E= -174.130671458449  delta_E= 0.000344423  |g|= 0.0520999  2 KF 5 JK
+macro= 73  E= -174.131017522472  delta_E= -0.000346064  |g|= 0.0591417  2 KF 5 JK
+macro= 74  E= -174.130673323975  delta_E= 0.000344198  |g|= 0.0520564  2 KF 5 JK
+macro= 75  E= -174.131019170773  delta_E= -0.000345847  |g|= 0.0591156  2 KF 5 JK
+macro= 76  E= -174.130675215094  delta_E= 0.000343956  |g|= 0.0520129  2 KF 5 JK
+macro= 77  E= -174.131020827143  delta_E= -0.000345612  |g|= 0.0590889  2 KF 5 JK
+macro= 78  E= -174.130677132467  delta_E= 0.000343695  |g|= 0.0519693  2 KF 5 JK
+macro= 79  E= -174.13102249249  delta_E= -0.00034536  |g|= 0.0590618  2 KF 5 JK
+macro= 80  E= -174.130679076789  delta_E= 0.000343416  |g|= 0.0519256  2 KF 5 JK
+macro= 81  E= -174.131024167718  delta_E= -0.000345091  |g|= 0.0590342  2 KF 5 JK
+macro= 82  E= -174.13068104882  delta_E= 0.000343119  |g|= 0.0518818  2 KF 5 JK
+macro= 83  E= -174.131025853693  delta_E= -0.000344805  |g|= 0.0590061  2 KF 5 JK
+macro= 84  E= -174.130683049432  delta_E= 0.000342804  |g|= 0.0518378  2 KF 5 JK
+macro= 85  E= -174.131027551315  delta_E= -0.000344502  |g|= 0.0589774  2 KF 5 JK
+macro= 86  E= -174.130685079619  delta_E= 0.000342472  |g|= 0.0517937  2 KF 5 JK
+macro= 87  E= -174.131029261545  delta_E= -0.000344182  |g|= 0.0589482  2 KF 5 JK
+macro= 88  E= -174.130687140502  delta_E= 0.000342121  |g|= 0.0517494  2 KF 5 JK
+macro= 89  E= -174.131030985392  delta_E= -0.000343845  |g|= 0.0589184  2 KF 5 JK
+macro= 90  E= -174.130689233338  delta_E= 0.000341752  |g|= 0.0517049  2 KF 5 JK
+macro= 91  E= -174.13103272391  delta_E= -0.000343491  |g|= 0.0588881  2 KF 5 JK
+macro= 92  E= -174.130691359543  delta_E= 0.000341364  |g|= 0.0516602  2 KF 5 JK
+macro= 93  E= -174.131034478214  delta_E= -0.000343119  |g|= 0.0588572  2 KF 5 JK
+macro= 94  E= -174.130693520709  delta_E= 0.000340958  |g|= 0.0516152  2 KF 5 JK
+macro= 95  E= -174.13103624948  delta_E= -0.000342729  |g|= 0.0588256  2 KF 5 JK
+macro= 96  E= -174.130695718628  delta_E= 0.000340531  |g|= 0.0515698  2 KF 5 JK
+macro= 97  E= -174.131038038955  delta_E= -0.00034232  |g|= 0.0587934  2 KF 5 JK
+macro= 98  E= -174.130697955313  delta_E= 0.000340084  |g|= 0.0515241  2 KF 5 JK
+macro= 99  E= -174.13103984797  delta_E= -0.000341893  |g|= 0.0587605  2 KF 5 JK
+Canonicalize SCF orbitals
+macro X = 100  E=-174.13103984797  |g|= 0.0587605  total 201 KF 601 JK
+SCF not converged.
+SCF energy = -174.13103984797 after 100 cycles  <S^2> = 0.7691479  2S+1 = 2.0190571
+
+WARN: Orbital degeneracy broken
+
+mf stability test 2
+mf energy: -174.13103984797013, stability True
+
+******** <class 'pyscf.cc.uccsd.UCCSD'> ********
+CC2 = 0
+CCSD nocc = (7, 6), nmo = (26, 26)
+frozen orbitals 2
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-06
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 437 MB)
+Init t2, MP2 energy = -0.338122561484842
+Init E_corr(UCCSD) = -0.340944464298127
+cycle = 1  E_corr(UCCSD) = -0.343299484239214  dE = -0.00235501994  norm(t1,t2) = 0.082632
+cycle = 2  E_corr(UCCSD) = -0.354017290443754  dE = -0.0107178062  norm(t1,t2) = 0.0293487
+cycle = 3  E_corr(UCCSD) = -0.354525880823344  dE = -0.00050859038  norm(t1,t2) = 0.025749
+cycle = 4  E_corr(UCCSD) = -0.358916037602646  dE = -0.00439015678  norm(t1,t2) = 0.0176993
+cycle = 5  E_corr(UCCSD) = -0.358955767051522  dE = -3.97294489e-05  norm(t1,t2) = 0.00644497
+cycle = 6  E_corr(UCCSD) = -0.358781884905564  dE = 0.000173882146  norm(t1,t2) = 0.00164163
+cycle = 7  E_corr(UCCSD) = -0.358888413251323  dE = -0.000106528346  norm(t1,t2) = 0.00069744
+cycle = 8  E_corr(UCCSD) = -0.358873072750539  dE = 1.53405008e-05  norm(t1,t2) = 0.000263826
+cycle = 9  E_corr(UCCSD) = -0.358869291536136  dE = 3.7812144e-06  norm(t1,t2) = 0.000140387
+cycle = 10  E_corr(UCCSD) = -0.358869119072503  dE = 1.72463632e-07  norm(t1,t2) = 4.22489e-05
+cycle = 11  E_corr(UCCSD) = -0.35886972455408  dE = -6.05481577e-07  norm(t1,t2) = 1.72866e-05
+cycle = 12  E_corr(UCCSD) = -0.358869361775201  dE = 3.62778879e-07  norm(t1,t2) = 9.51226e-06
+cycle = 13  E_corr(UCCSD) = -0.35886908248921  dE = 2.79285992e-07  norm(t1,t2) = 3.05544e-06
+cycle = 14  E_corr(UCCSD) = -0.358868991911804  dE = 9.05774057e-08  norm(t1,t2) = 1.08004e-06
+cycle = 15  E_corr(UCCSD) = -0.358868990222646  dE = 1.68915792e-09  norm(t1,t2) = 5.2832e-07
+UCCSD converged
+E(UCCSD) = -174.4899088381928  E_corr = -0.358868990222646
+UCCSD(T) correction = -0.00810261471917035
+UCCSD(T) energy =  -174.49801145291195

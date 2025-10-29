@@ -1,15 +1,20 @@
 from pyscf import gto, scf, cc
 
 s = 0
-nfrozen = 2
+nfrozen = 10
 b = 'ccpvdz'
+sym = False
 
 atoms = '''
-B        0.000000    0.000000   -0.748417
-N        0.000000    0.000000    0.534583
+Cl         0.0000000000        0.0000000000       -0.0888197240
+F          0.0000000000        0.0000000000        1.5083826784
+F          0.0000000000        1.6528067665        0.0376092614
+F         -1.6528067665        0.0000000000        0.0376092614
+F          0.0000000000       -1.6528067665        0.0376092614
+F          1.6528067665        0.0000000000        0.0376092614
 '''
 
-mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=False)
+mol = gto.M(atom=atoms, basis=b, spin=s, verbose=4, symmetry=sym)
 mol.build()
 
 mf = scf.RHF(mol)

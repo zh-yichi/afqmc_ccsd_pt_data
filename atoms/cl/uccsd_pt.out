@@ -1,0 +1,95 @@
+#
+# Preparing AFQMC calculation
+# If you import pyscf cc modules and use MPI for AFQMC in the same script, finalize MPI before calling the AFQMC driver.
+# Calculating Cholesky integrals
+# Finished calculating Cholesky integrals
+#
+# Size of the correlation space:
+# Number of electrons: (4, 3)
+# Number of basis functions: 13
+# Number of Cholesky vectors: 96
+#
+# running AFQMC on GPU
+# AFQMC script: /u/yzhang65/myprojects/software/cs_afqmc/ad_afqmc/prop_unrestricted/run_afqmc_ccsd_pt.py
+# Hostname: gpua033.delta.ncsa.illinois.edu
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: gpua033.delta.ncsa.illinois.edu
+# Release: 4.18.0-477.95.1.el8_8.x86_64
+# Version: #1 SMP Fri Apr 11 09:50:48 EDT 2025
+# Machine: x86_64
+# Processor: x86_64
+# Hostname: gpua033.delta.ncsa.illinois.edu
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: gpua033.delta.ncsa.illinois.edu
+# Release: 4.18.0-477.95.1.el8_8.x86_64
+# Version: #1 SMP Fri Apr 11 09:50:48 EDT 2025
+# Machine: x86_64
+# Processor: x86_64
+# Number of MPI ranks: 1
+#
+# norb: 13
+# nelec: (4, 3)
+#
+# n_eql: 4
+# n_prop_steps: 50
+# n_ene_blocks: 10
+# n_sr_blocks: 10
+# n_blocks: 100
+# n_walkers: 400
+# seed: 2
+# walker_type: uhf
+# trial: uccsd_pt
+# dt: 0.005
+# free_projection: False
+# use_gpu: True
+# n_exp_terms: 6
+# orbital_rotation: True
+# do_sr: True
+# symmetry: False
+# save_walkers: False
+# ene0: 0.0
+# n_batch: 1
+# LNO: False
+# orbE: 0
+# maxError: 0.001
+#
+#
+
+# Propagating with 400 walkers
+# Equilibration sweeps:
+#   Iter         <t>             <e0>            <e1>              energy        Walltime
+      0          0.000000        -459.471143     -0.126610         -459.597753   9.09
+      1          0.051418         -459.595703    -0.767490         -459.599169   20.84
+      2          0.051259         -459.595795    -0.765041         -459.599181   30.07
+      3          0.051956         -459.597534    -0.773783         -459.599201   35.19
+      4          0.051680         -459.596466    -0.770682         -459.599201   40.31
+#
+# Sampling sweeps:
+#  Iter             energy       error           Walltime
+    10            -459.598879    0.000298         96.86
+    20            -459.599016    0.000155         148.07
+    30            -459.599116    0.000105         199.24
+    40            -459.599114    0.000080         250.39
+    50            -459.599061    0.000064         301.55
+    60            -459.599075    0.000054         352.71
+    70            -459.599108    0.000046         403.87
+    80            -459.599214    0.000063         455.02
+    90            -459.599147    0.000056         506.16
+# Number of outliers in post: 0
+# Final Results:
+# h0 = -444.73669725
+# <t> = 0.051658 +/- 0.000004
+# <e0> = -459.596619 +/- 0.000553
+# <e1> = -0.770188 +/- 0.000050
+# AFQMC/CCSD_PT energy (covariance): -459.599186 +/- 0.000051
+# remove outliers:  2
+# AFQMC/CCSD_PT energy (direct obs): -459.599091 +/- 0.000008
+# total run time: 552.21

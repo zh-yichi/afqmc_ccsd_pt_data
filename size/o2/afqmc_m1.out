@@ -1,0 +1,81 @@
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Number of MPI ranks: 1
+#
+# norb: 8
+# nelec: (7, 5)
+#
+# n_eql: 4
+# n_prop_steps: 50
+# n_ene_blocks: 5
+# n_sr_blocks: 10
+# n_blocks: 100
+# n_walkers: 200
+# seed: 2
+# walker_type: uhf
+# trial: uccsd_pt2
+# dt: 0.005
+# free_projection: False
+# use_gpu: True
+# n_exp_terms: 6
+# orbital_rotation: True
+# do_sr: True
+# symmetry: False
+# save_walkers: False
+# ene0: 0.0
+# n_batch: 1
+# LNO: False
+# orbE: 0
+# maxError: 0.001
+#
+# Propagating with 200 walkers
+# Equilibration sweeps:
+#   Iter  	    <exp(t1)> 	 <t2> 	 	 <e0> 	 	 <e1> 	 	    energy 	 Walltime
+      0 	   0.967888 	 0.000000 	-45.208984 	 -0.099617 	   -149.160850 	 3.49
+      1 	   1.025052 	 0.059262 	 -47.969053 	 -2.790225 	   -149.162237 	 11.36
+      2 	   1.051389 	 0.061597 	 -49.193998 	 -2.907046 	   -149.162301 	 18.83
+      3 	   1.051839 	 0.067891 	 -49.225075 	 -3.192300 	   -149.162376 	 23.71
+      4 	   1.055938 	 0.066177 	 -49.413547 	 -3.114647 	   -149.161780 	 28.60
+#
+# Sampling sweeps:
+#  Iter 	 energy 	 error 	 	 Walltime
+    10 	 	 -149.162206 	 0.000101 	  84.87
+    20 	 	 -149.162126 	 0.000070 	  133.75
+    30 	 	 -149.162223 	 0.000094 	  182.68
+    40 	 	 -149.162193 	 0.000078 	  231.61
+    50 	 	 -149.162175 	 0.000063 	  280.52
+    60 	 	 -149.162158 	 0.000055 	  329.43
+    70 	 	 -149.162167 	 0.000049 	  378.35
+    80 	 	 -149.162162 	 0.000045 	  427.28
+    90 	 	 -149.162172 	 0.000041 	  476.20
+# Number of outliers in post: 0 
+# Final Results1:
+# h0 = -102.34901724
+# <exp(t1)> = 1.053211 +/- 0.000025
+# <t2> = 0.065865 +/- 0.000029
+# <e0> = -49.285695 +/- 0.001189
+# <e1> = -3.100657 +/- 0.001314
+# AFQMC/UCCSD_PT2 energy (covariance): -149.162177 +/- 0.000040
+# remove outliers in direct sampling:  1
+# AFQMC/UCCSD_PT2 energy (direct obs): -149.162143 +/- 0.000032
+# total run time: 520.21

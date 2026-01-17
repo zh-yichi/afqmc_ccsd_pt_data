@@ -1,0 +1,89 @@
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Number of MPI ranks: 1
+#
+# norb: 8
+# nelec: (7, 5)
+#
+# n_eql: 4
+# n_prop_steps: 50
+# n_ene_blocks: 5
+# n_sr_blocks: 10
+# n_blocks: 100
+# n_walkers: 200
+# seed: 2
+# walker_type: uhf
+# trial: uhf
+# dt: 0.005
+# free_projection: False
+# use_gpu: True
+# n_exp_terms: 6
+# orbital_rotation: True
+# do_sr: True
+# symmetry: False
+# save_walkers: False
+# ene0: 0.0
+# n_batch: 1
+# LNO: False
+# orbE: 0
+# maxError: 0.001
+#
+# 
+
+# Propagating with 200 walkers
+# Equilibration sweeps:
+#   Iter 	 energy 	 Walltime
+      0 	 -149.054178 	 2.47
+      1 	 -149.143799 	 9.31 
+      2 	 -149.146052 	 15.73 
+      3 	 -149.148701 	 20.20 
+      4 	 -149.153566 	 24.67 
+#
+# Sampling sweeps:
+#  Iter 	 energy 	 error 	 	 Walltime
+    10 	 	 -149.152696 	 0.002582 	  75.69
+    20 	 	 -149.151536 	 0.001566 	  120.31
+    30 	 	 -149.151607 	 0.001047 	  164.92
+    40 	 	 -149.151672 	 0.000811 	  209.52
+    50 	 	 -149.151596 	 0.000666 	  254.15
+    60 	 	 -149.151823 	 0.000591 	  298.79
+    70 	 	 -149.151672 	 0.000521 	  343.42
+    80 	 	 -149.151702 	 0.000487 	  388.05
+    90 	 	 -149.151933 	 0.000457 	  432.68
+# Number of outliers in post: 0 
+#
+# Mean: -1.49152022e+02
+# Block size    # of blocks         Mean                Error
+      1              100       -1.49152023e+02       4.234757e-04
+      2               50       -1.49152008e+02       4.134723e-04
+      3               33       -1.49152039e+02       3.346480e-04
+      5               20       -1.49152039e+02       3.765649e-04
+     10               10       -1.49152023e+02       2.981611e-04
+     15                6       -1.49151871e+02       3.521577e-04
+     20                5       -1.49152023e+02       3.370709e-04
+     30                3       -1.49151901e+02       2.354966e-04
+# Stocahstic error estimate: 4.234757e-04
+#
+Final Results:
+AFQMC energy: -149.152022 +/- 0.000423
+total run time: 472.83

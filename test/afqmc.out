@@ -1,0 +1,65 @@
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Number of MPI ranks: 1
+#
+# norb: 2
+# nelec: (1, 1)
+#
+# n_eql: 3
+# n_prop_steps: 50
+# n_ene_blocks: 5
+# n_sr_blocks: 10
+# n_blocks: 600
+# n_walkers: 300
+# seed: 6
+# walker_type: rhf
+# trial: rhf
+# dt: 0.005
+# free_projection: False
+# use_gpu: True
+# n_exp_terms: 6
+# orbital_rotation: True
+# do_sr: True
+# symmetry: False
+# save_walkers: False
+# ene0: 0.0
+# n_batch: 1
+# LNO: False
+# orbE: 0
+# maxError: 0.001
+#
+# 
+
+# Propagating with 300 walkers
+# Equilibration sweeps:
+#   Iter 	 energy 	 Walltime
+      0 	 -1.056430 	 1.37
+      1 	 -1.088970 	 3.81 
+      2 	 -1.095025 	 5.90 
+      3 	 -1.092679 	 6.89 
+#
+# Sampling sweeps:
+#  Iter 	 energy 	 error 	 	 Walltime
+    60 	 	 -1.093878 	 0.000366 	  66.24
+   120 	 	 -1.093627 	 0.000273 	  123.59
+   180 	 	 -1.093575 	 0.000209 	  181.03

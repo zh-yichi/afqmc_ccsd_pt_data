@@ -1,0 +1,258 @@
+#INFO: **** input file is /home/sharmagroup/sharmagroup/project/afqmc_ccpt/afqmc_ccpt_data/test/test_h2.py ****
+from pyscf import gto, scf, cc
+
+a = 2 # bond length in a cluster
+d = 100 # distance between each cluster
+na = 2  # size of a cluster (monomer)
+nc = 16 # set as integer multiple of monomers
+s = 0 # spin of each monomer
+elmt = 'H'
+atoms = ""
+for n in range(nc*na):
+    shift = ((n - n % na) // na) * (d-a)
+    atoms += f"{elmt} {n*a+shift:.5f} 0.00000 0.00000 \n"
+
+mol = gto.M(atom=atoms, basis="sto6g",spin=0, unit='bohr', verbose=4)
+mol.build()
+
+mf = scf.RHF(mol)
+e = mf.kernel()
+
+nfrozen = 0
+
+mycc = cc.CCSD(mf,frozen=nfrozen)
+mycc.kernel()
+
+options = {'n_eql': 3,
+           'n_prop_steps': 50,
+            'n_ene_blocks': 1,
+            'n_sr_blocks': 5,
+            'n_blocks': 100,
+            'n_walkers': 300,
+            'seed': 6,
+            'walker_type': 'rhf',
+            'trial': 'ccd_pt',
+            'dt':0.005,
+            'free_projection':False,
+            'ad_mode':None,
+            'use_gpu': True
+            }
+
+from ad_afqmc.prop_unrestricted import prop_unrestricted
+prop_unrestricted.prep_afqmc(mycc,options,chol_cut=1e-6)
+prop_unrestricted.run_afqmc(options)
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='sharmagroup-rn', release='6.14.0-37-generic', version='#37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2', machine='x86_64')  Threads 16
+Python 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+numpy 2.3.1  scipy 1.16.2  h5py 3.14.0
+Date: Wed Jan 14 11:26:10 2026
+PySCF version 2.11.0
+PySCF path  /home/sharmagroup/sharmagroup/pyscf
+GIT HEAD (branch master) 3d1768f5e33b144b606c3d2c81c12ee54d794501
+
+[ENV] PYSCF_EXT_PATH /home/sharmagroup/sharmagroup/pyscf-forge
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 32
+[INPUT] num. electrons = 32
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry False subgroup None
+[INPUT] Mole.unit = bohr
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 H      0.000000000000   0.000000000000   0.000000000000 AA    0.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  2 H      1.058354421840   0.000000000000   0.000000000000 AA    2.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  3 H     53.976075513840   0.000000000000   0.000000000000 AA  102.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  4 H     55.034429935680   0.000000000000   0.000000000000 AA  104.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  5 H    107.952151027680   0.000000000000   0.000000000000 AA  204.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  6 H    109.010505449520   0.000000000000   0.000000000000 AA  206.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  7 H    161.928226541520   0.000000000000   0.000000000000 AA  306.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  8 H    162.986580963360   0.000000000000   0.000000000000 AA  308.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  9 H    215.904302055360   0.000000000000   0.000000000000 AA  408.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 10 H    216.962656477200   0.000000000000   0.000000000000 AA  410.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 11 H    269.880377569200   0.000000000000   0.000000000000 AA  510.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 12 H    270.938731991040   0.000000000000   0.000000000000 AA  512.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 13 H    323.856453083040   0.000000000000   0.000000000000 AA  612.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 14 H    324.914807504880   0.000000000000   0.000000000000 AA  614.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 15 H    377.832528596880   0.000000000000   0.000000000000 AA  714.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 16 H    378.890883018720   0.000000000000   0.000000000000 AA  716.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 17 H    431.808604110720   0.000000000000   0.000000000000 AA  816.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 18 H    432.866958532560   0.000000000000   0.000000000000 AA  818.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 19 H    485.784679624560   0.000000000000   0.000000000000 AA  918.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 20 H    486.843034046400   0.000000000000   0.000000000000 AA  920.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 21 H    539.760755138400   0.000000000000   0.000000000000 AA  1020.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 22 H    540.819109560240   0.000000000000   0.000000000000 AA  1022.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 23 H    593.736830652240   0.000000000000   0.000000000000 AA  1122.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 24 H    594.795185074080   0.000000000000   0.000000000000 AA  1124.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 25 H    647.712906166080   0.000000000000   0.000000000000 AA  1224.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 26 H    648.771260587920   0.000000000000   0.000000000000 AA  1226.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 27 H    701.688981679920   0.000000000000   0.000000000000 AA  1326.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 28 H    702.747336101760   0.000000000000   0.000000000000 AA  1328.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 29 H    755.665057193760   0.000000000000   0.000000000000 AA  1428.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 30 H    756.723411615600   0.000000000000   0.000000000000 AA  1430.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 31 H    809.641132707600   0.000000000000   0.000000000000 AA  1530.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT] 32 H    810.699487129440   0.000000000000   0.000000000000 AA  1532.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+
+nuclear repulsion = 9.49392360958676
+number of shells = 32
+number of NR pGTOs = 192
+number of NR cGTOs = 32
+basis = sto6g
+ecp = {}
+CPU time:         0.19
+
+
+******** <class 'pyscf.scf.hf.RHF'> ********
+method = RHF
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /tmp/tmpm6sif5a9
+max_memory 4000 MB (current use 109 MB)
+Set gradient conv threshold to 3.16228e-05
+Initial guess from minao.
+init E= -10.9464091458063
+  HOMO = -0.383855681209739  LUMO = 0.31473762511544
+cycle= 1 E= -16.9028781124262  delta_E= -5.96  |g|= 1.49e-05  |ddm|= 3.66
+  HOMO = -0.470061372681026  LUMO = 0.414890932049415
+cycle= 2 E= -16.9028781125528  delta_E= -1.27e-10  |g|= 1.85e-07  |ddm|= 2.68e-05
+  HOMO = -0.470061371684725  LUMO = 0.414890931664874
+Extra cycle  E= -16.9028781125529  delta_E= -3.55e-14  |g|= 2.29e-09  |ddm|= 3.33e-07
+converged SCF energy = -16.9028781125529
+
+******** <class 'pyscf.cc.ccsd.CCSD'> ********
+CC2 = 0
+CCSD nocc = 16, nmo = 32
+frozen orbitals 0
+max_cycle = 50
+direct = 0
+conv_tol = 1e-07
+conv_tol_normt = 1e-05
+diis_space = 6
+diis_start_cycle = 0
+diis_start_energy_diff = 1e+09
+max_memory 4000 MB (current use 121 MB)
+Init t2, MP2 energy = -17.2675680675828  E_corr(MP2) -0.364689955029897
+Init E_corr(CCSD) = -0.364689955029896
+cycle = 1  E_corr(CCSD) = -0.523161068474922  dE = -0.158471113  norm(t1,t2) = 0.197248
+cycle = 2  E_corr(CCSD) = -0.589094934073628  dE = -0.0659338656  norm(t1,t2) = 0.0820676
+cycle = 3  E_corr(CCSD) = -0.634561816348378  dE = -0.0454668823  norm(t1,t2) = 0.0334949
+cycle = 4  E_corr(CCSD) = -0.63432981565154  dE = 0.000232000697  norm(t1,t2) = 0.000222626
+cycle = 5  E_corr(CCSD) = -0.634300396352106  dE = 2.94192994e-05  norm(t1,t2) = 5.01168e-05
+cycle = 6  E_corr(CCSD) = -0.634288839439629  dE = 1.15569125e-05  norm(t1,t2) = 2.82418e-05
+cycle = 7  E_corr(CCSD) = -0.634282667282192  dE = 6.17215744e-06  norm(t1,t2) = 1.96485e-05
+cycle = 8  E_corr(CCSD) = -0.634262171351668  dE = 2.04959305e-05  norm(t1,t2) = 1.50592e-05
+cycle = 9  E_corr(CCSD) = -0.634262414854636  dE = -2.43502968e-07  norm(t1,t2) = 1.8073e-07
+cycle = 10  E_corr(CCSD) = -0.63426241442268  dE = 4.31956693e-10  norm(t1,t2) = 7.12387e-10
+CCSD converged
+E(CCSD) = -17.53714052697554  E_corr = -0.6342624144226796
+#
+# Preparing AFQMC calculation
+# If you import pyscf cc modules and use MPI for AFQMC in the same script, finalize MPI before calling the AFQMC driver.
+# Calculating Cholesky integrals
+# Finished calculating Cholesky integrals
+#
+# Size of the correlation space:
+# Number of electrons: (16, 16)
+# Number of basis functions: 32
+# Number of Cholesky vectors: 48
+#
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# running AFQMC on GPU
+# AFQMC script: /home/sharmagroup/sharmagroup/cs_afqmc/ad_afqmc/prop_unrestricted/run_afqmc_ccsd_pt.py
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Hostname: sharmagroup-rn
+# System Type: Linux
+# Machine Type: x86_64
+# Processor: x86_64
+# Using GPU.
+# System: Linux
+# Node Name: sharmagroup-rn
+# Release: 6.14.0-37-generic
+# Version: #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2
+# Machine: x86_64
+# Processor: x86_64
+# Number of MPI ranks: 1
+#
+# norb: 32
+# nelec: (16, 16)
+#
+# n_eql: 3
+# n_prop_steps: 50
+# n_ene_blocks: 1
+# n_sr_blocks: 5
+# n_blocks: 100
+# n_walkers: 300
+# seed: 6
+# walker_type: rhf
+# trial: ccd_pt
+# dt: 0.005
+# free_projection: False
+# use_gpu: True
+# n_exp_terms: 6
+# orbital_rotation: True
+# do_sr: True
+# symmetry: False
+# save_walkers: False
+# ene0: 0.0
+# n_batch: 1
+# LNO: False
+# orbE: 0
+# maxError: 0.001
+#
+# Propagating with 300 walkers
+# Equilibration sweeps:
+#   Iter 	 Energy_HF 	 Energy_PT 	 Walltime
+      0 	 -16.902878 	 -17.537141 	 2.65
+      1 	 -17.457263 	 -17.541851 	 16.20
+      2 	 -17.497061 	 -17.541255 	 29.36
+      3 	 -17.498894 	 -17.534324 	 40.82
+#
+# Sampling sweeps:
+#  Iter 	 Energy_HF 	 Energy_PT 	 error 	 	 Walltime
+    10 	 	 -17.510778 	 -17.540641 	 0.003718 	 56.33
+    20 	 	 -17.507435 	 -17.539469 	 0.002300 	 68.95
+    30 	 	 -17.499088 	 -17.538665 	 0.001693 	 81.57
+    40 	 	 -17.499823 	 -17.539691 	 0.001465 	 94.20
+    50 	 	 -17.498392 	 -17.539851 	 0.001403 	 106.82
+    60 	 	 -17.497897 	 -17.541456 	 0.001970 	 119.47
+    70 	 	 -17.500202 	 -17.541332 	 0.001748 	 132.08
+    80 	 	 -17.498260 	 -17.540522 	 0.001574 	 144.72
+    90 	 	 -17.498372 	 -17.540388 	 0.001487 	 157.36
+# Number of outliers in post: 0 
+# Final Results:
+# AFQMC/CCSD_PT energy (covariance): -17.540249 +/- 0.001389
+# remove outliers in direct sampling:  1
+# AFQMC/CCSD_PT energy (direct obs): -17.538774 +/- 0.001064
+# total run time: 168.74
